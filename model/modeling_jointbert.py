@@ -24,6 +24,10 @@ class JointBERT(BertPreTrainedModel):
                             token_type_ids=token_type_ids)  # sequence_output, pooled_output, (hidden_states), (attentions)
         sequence_output = outputs[0]
         pooled_output = outputs[1]  # [CLS]
+
+        #seq_output torch.Size([32, 50, 768]) #50: seq_length
+        #pooled_output torch.Size([32, 768])
+
         # feed pooled_output into sequence_output
         ## concatenate
         
