@@ -107,7 +107,7 @@ class Trainer(object):
 
                     if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
                         results = self.evaluate("dev")
-                        early_stopping(results['loss'], self.model, self.args)
+                        early_stopping(results['semantic_frame_acc'], self.model, self.args)
                         if early_stopping.early_stop:
                             print("Early stopping")
                             break

@@ -107,7 +107,7 @@ def get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
         slot_result.append(one_sent_result)
     slot_result = np.array(slot_result)
 
-    sementic_acc = np.multiply(intent_result, slot_result).mean()
+    semantic_acc = np.multiply(intent_result, slot_result).mean()
     return {
-        "sementic_frame_acc": sementic_acc
+        "semantic_frame_acc": semantic_acc
     }
