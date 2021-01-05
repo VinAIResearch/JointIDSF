@@ -12,7 +12,6 @@ class JointRoberta(RobertaPreTrainedModel):
         self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
         self.roberta = RobertaModel(config=config)  # Load pretrained bert
-        print(self.roberta)
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
         self.slot_classifier = SlotClassifier(config.hidden_size, self.num_slot_labels, args.dropout_rate)
 

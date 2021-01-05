@@ -106,8 +106,9 @@ class Trainer(object):
                     global_step += 1
 
                     if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
+                        print('Tuning metrics:', self.args.tuning_metric)
                         results = self.evaluate("dev")
-                        early_stopping(results['semantic_frame_acc'], self.model, self.args)
+                        early_stopping(results[self.args.tuning_metric], self.model, self.args)
                         if early_stopping.early_stop:
                             print("Early stopping")
                             break

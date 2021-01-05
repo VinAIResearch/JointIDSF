@@ -34,7 +34,7 @@ if __name__ == '__main__':
     parser.add_argument("--slot_label_file", default="slot_label.txt", type=str, help="Slot Label file")
 
     parser.add_argument("--model_type", default="bert", type=str, help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()))
-
+    parser.add_argument("--tuning_metric", default="val_loss", type=str, help="Metrics to tune when training")
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
     parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for evaluation.")
@@ -64,6 +64,11 @@ if __name__ == '__main__':
 
     # CRF option
     parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
+
+    #Slot-intent interaction
+    parser.add_argument("--use_intent_context_concat", action="store_true", help="Whether to feed context information of intent into slots vectors (simple concatenation)")
+    parser.add_argument("--use_intent_context_attention", action="store_true", help="Whether to feed context information of intent into slots vectors (dot product attention)")
+
     parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
 
     args = parser.parse_args()

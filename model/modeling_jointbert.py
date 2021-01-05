@@ -25,15 +25,19 @@ class JointBERT(BertPreTrainedModel):
         sequence_output = outputs[0]
         pooled_output = outputs[1]  # [CLS]
 
-        #seq_output torch.Size([32, 50, 768]) #50: seq_length
+        #seq_output torch.Size([32, 50, 768]) (batch_size, seq_len, hidden_size)
         #pooled_output torch.Size([32, 768])
-
+        
         # feed pooled_output into sequence_output
         ## concatenate
-        
+        if self.args.use_intent_context_concat:
+            for i in range(self.args.train_batch_size):
+                for j in range(self.args.max_seq_len):
+                    sequence_output[i][j].append(pooled_output[i])
+        # sequence_output.cat(sequence_output, pooled_output, 2)
         ## dot product attention
-
-
+        elif self.args.use_intent_context_attention:
+            pass
         # feed into fct layer for prediction
 
         intent_logits = self.intent_classifier(pooled_output)
