@@ -13,7 +13,11 @@ class JointRoberta(RobertaPreTrainedModel):
         self.num_slot_labels = len(slot_label_lst)
         self.roberta = RobertaModel(config=config)  # Load pretrained bert
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
-        self.slot_classifier = SlotClassifier(config.hidden_size, self.num_slot_labels, args.dropout_rate)
+        self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
+        if self.args.use_intent_context_concat:
+          self.slot_classifier = SlotClassifier(config.hidden_size*2, self.num_slot_labels, args.dropout_rate)
+        else:
+          self.slot_classifier = SlotClassifier(config.hidden_size, self.num_slot_labels, args.dropout_rate)
 
         if args.use_crf:
             self.crf = CRF(num_tags=self.num_slot_labels, batch_first=True)
@@ -25,14 +29,21 @@ class JointRoberta(RobertaPreTrainedModel):
         pooled_output = outputs[1]  # [CLS]
         # feed pooled_output into sequence_output
         ## concatenate
-        
+        if self.args.use_intent_context_concat:
+          padded_pooled_output = torch.unsqueeze(pooled_output,1)
+          padded_pooled_output = padded_pooled_output.expand(-1,50,-1)
+          sequence_output = nn.ConstantPad1d((0,768), 1)(sequence_output)
+          sequence_output[:,:,768:] = padded_pooled_output
+          slot_logits = self.slot_classifier(sequence_output)
+
+        # sequence_output.cat(sequence_output, pooled_output, 2)
         ## dot product attention
-
-
+        elif self.args.use_intent_context_attention:
+            pass
         # feed into fct layer for prediction
 
         intent_logits = self.intent_classifier(pooled_output)
-        slot_logits = self.slot_classifier(sequence_output)
+        # slot_logits = self.slot_classifier(sequence_output)
 
         total_loss = 0
         # 1. Intent Softmax

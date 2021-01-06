@@ -106,7 +106,7 @@ class Trainer(object):
                     global_step += 1
 
                     if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
-                        print('Tuning metrics:', self.args.tuning_metric)
+                        print('\nTuning metrics:', self.args.tuning_metric)
                         results = self.evaluate("dev")
                         early_stopping(results[self.args.tuning_metric], self.model, self.args)
                         if early_stopping.early_stop:
@@ -121,7 +121,7 @@ class Trainer(object):
                     epoch_iterator.close()
                     break
 
-            if 0 < self.args.max_steps < global_step:
+            if 0 < self.args.max_steps < global_step or early_stopping.early_stop:
                 train_iterator.close()
                 break
 
