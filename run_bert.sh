@@ -1,3 +1,8 @@
+
+
+EXPORT lr =
+
+
 python main.py --task atis \
                   --model_type bert \
                   --model_dir atis_bert \

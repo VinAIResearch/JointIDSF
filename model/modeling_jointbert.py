@@ -32,21 +32,24 @@ class JointBERT(BertPreTrainedModel):
         
         # feed pooled_output into sequence_output
         ## concatenate
-        if self.args.use_intent_context_concat:
-          padded_pooled_output = torch.unsqueeze(pooled_output,1)
-          padded_pooled_output = padded_pooled_output.expand(-1,50,-1)
-          sequence_output = nn.ConstantPad1d((0,768), 1)(sequence_output)
-          sequence_output[:,:,768:] = padded_pooled_output
-          slot_logits = self.slot_classifier(sequence_output)
+        # if self.args.use_intent_context_concat:
+        #   padded_pooled_output = torch.unsqueeze(pooled_output,1)
+        #   padded_pooled_output = padded_pooled_output.expand(-1,self.args.max_seq_len,-1)
+        #   hidden_size = sequence_output.shape[2]
+        #   sequence_output = nn.ConstantPad1d((0,hidden_size), 1)(sequence_output)
+        #   sequence_output[:,:,hidden_size:] = padded_pooled_output
 
-        # sequence_output.cat(sequence_output, pooled_output, 2)
-        ## dot product attention
-        elif self.args.use_intent_context_attention:
-            pass
+        # ## dot product attention
+        # elif self.args.use_intent_context_attention:
+        #     # padded_pooled_output = torch.unsqueeze(pooled_output,1)
+        #     # padded_pooled_output = padded_pooled_output.expand(-1,self.args.max_seq_len,-1)
+        #     # attn_mask = torch.matmul([padded_pooled_output, sequence_output])
+        #     # context_vector = 
+        #     pass
         # feed into fct layer for prediction
 
         intent_logits = self.intent_classifier(pooled_output)
-        # slot_logits = self.slot_classifier(sequence_output)
+        slot_logits = self.slot_classifier(sequence_output)
 
         total_loss = 0
         # 1. Intent Softmax
@@ -57,7 +60,12 @@ class JointBERT(BertPreTrainedModel):
             else:
                 intent_loss_fct = nn.CrossEntropyLoss()
                 intent_loss = intent_loss_fct(intent_logits.view(-1, self.num_intent_labels), intent_label_ids.view(-1))
+            # print(intent_loss.shape)
             total_loss += intent_loss
+        if self.args.use_intent_context_concat:
+            pass
+        elif self.args.use_intent_context_attention:
+            pass 
 
         # 2. Slot Softmax
         if slot_labels_ids is not None:
