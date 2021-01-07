@@ -218,7 +218,7 @@ O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O
 O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.period_of_day B-depart_time.period_mod B-depart_date.day_name I-depart_date.day_name
 O O O O O O B-fromloc.city_name O O B-toloc.city_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time I-arrive_time.time I-arrive_time.time O B-arrive_date.day_name I-arrive_date.day_name
 O O O O O O O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time O B-depart_time.period_of_day B-depart_date.day_name I-depart_date.day_name
-O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.period_of_day I-depart_time.period_of_day B-depart_date.day_name O O I-meal O O
+O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.period_of_day I-depart_time.period_of_day B-depart_date.day_name O O O B-meal I-meal
 O O O O O O O B-depart_time.period_of_day B-depart_time.period_mod O B-fromloc.city_name O B-toloc.city_name
 O O O O O O O B-depart_time.period_mod B-depart_time.period_of_day I-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
 O O O O O O O B-depart_time.period_of_day I-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name

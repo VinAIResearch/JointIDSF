@@ -1657,7 +1657,7 @@ O O O O O O O O B-airport_name I-airport_name I-airport_name I-airport_name
 O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name O B-airline_name I-airline_name I-airline_name
 O O B-round_trip B-cost_relative I-cost_relative O B-fromloc.city_name O B-toloc.city_name
 O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name O
-O O O O O O B-flight_stop I-flight_stop I-flight_stop I-flight_stop O B-fromloc.city_name O B-toloc.city_name O O O B-arrive_date.day_name I-arrive_date.day_name O O B-cost_relative B-fare_amount I-fare_amount I-fare_amount I-fare_amount I-fare_amount O O O O I-round_trip
+O O O O O O B-flight_stop I-flight_stop I-flight_stop I-flight_stop O B-fromloc.city_name O B-toloc.city_name O O O B-arrive_date.day_name I-arrive_date.day_name O O B-cost_relative B-fare_amount I-fare_amount I-fare_amount I-fare_amount I-fare_amount O O O O B-round_trip
 B-airline_code O O O
 O O O O O O B-class_type I-class_type O B-airline_name O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
 O O O O O O O O O O B-city_name
@@ -2277,7 +2277,7 @@ O O O O O B-fromloc.city_name
 O O O O B-fare_basis_code
 O O O O O O B-fromloc.city_name O B-toloc.city_name O O O O B-stoploc.city_name
 O O O O B-city_name O O
-O O O O O O O O O O O B-airline_name I-airline_name I-airline_name O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name I-toloc.city_name O O O O O O I-flight_mod I-flight_mod O O I-depart_time.period_of_day I-depart_time.period_of_day
+O O O O O O O O O O O B-airline_name I-airline_name I-airline_name O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name I-toloc.city_name O O O O O O B-flight_mod I-flight_mod O O B-depart_time.period_of_day I-depart_time.period_of_day
 O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O O B-stoploc.city_name
 O O O O O B-round_trip O B-fromloc.city_name O B-toloc.city_name
 O O O B-depart_time.period_of_day I-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
@@ -3345,7 +3345,7 @@ O O O O B-class_type I-class_type O B-airline_name I-airline_name I-airline_name
 O O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_time.period_of_day B-depart_date.day_name I-depart_date.day_name
 O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time I-depart_time.time
 B-airline_code O O O O O
-O O O O O O B-airline_code B-flight_number O B-fromloc.city_name O B-toloc.city_name O O O O B-stoploc.city_name O O B-meal_description I-meal_description O O O O O O I-airline_code O O O O
+O O O O O O B-airline_code B-flight_number O B-fromloc.city_name O B-toloc.city_name O O O O B-stoploc.city_name O O B-meal_description I-meal_description O O O O O O B-airline_code B-flight_number B-or B-flight_number O
 O O O O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
 B-meal_code O O O O O O
 O O O O O O O B-fromloc.city_name O B-toloc.city_name O O O B-round_trip B-cost_relative I-cost_relative O
@@ -3735,7 +3735,7 @@ O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
 O O O O O O O B-fromloc.city_name O B-toloc.city_name
 O O O O O O O B-fromloc.city_name O B-toloc.city_name
 O O O B-cost_relative I-cost_relative O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time I-arrive_time.time O O O B-arrive_date.day_name I-arrive_date.day_name
-O O O O O O O O O B-fromloc.city_name O B-toloc.city_name O O O O O O O O I-fromloc.city_name O I-depart_time.period_of_day I-depart_time.period_of_day
+O O O O O O O O O B-fromloc.city_name O B-toloc.city_name O O O O O O O O B-fromloc.city_name O B-depart_time.period_of_day I-depart_time.period_of_day
 O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time I-arrive_time.time
 O O O B-round_trip O B-fromloc.city_name O B-toloc.city_name
 O O O O B-fromloc.city_name O B-toloc.city_name
