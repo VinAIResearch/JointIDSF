@@ -108,7 +108,10 @@ class JointProcessor(object):
         Args:
             mode: train, dev, test
         """
-        data_path = os.path.join(self.args.data_dir, self.args.task, mode)
+        if self.args.task == 'vi-atis':
+            data_path = os.path.join(self.args.data_dir, self.args.task, mode, self.args.token_level)
+        else:
+            data_path = os.path.join(self.args.data_dir, self.args.task, mode)
         logger.info("LOOKING AT {}".format(data_path))
         return self._create_examples(texts=self._read_file(os.path.join(data_path, self.input_text_file)),
                                      intents=self._read_file(os.path.join(data_path, self.intent_label_file)),
@@ -118,7 +121,8 @@ class JointProcessor(object):
 
 processors = {
     "atis": JointProcessor,
-    "snips": JointProcessor
+    "snips": JointProcessor,
+    "vi-atis": JointProcessor
 }
 
 

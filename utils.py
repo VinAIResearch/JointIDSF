@@ -63,9 +63,12 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     slot_result = get_slot_metrics(slot_preds, slot_labels)
     sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
 
+    mean_intent_slot = (intent_result['intent_acc'] + slot_result['slot_f1']) / 2
+
     results.update(intent_result)
     results.update(slot_result)
     results.update(sementic_result)
+    results['mean_intent_slot'] = mean_intent_slot
 
     return results
 
