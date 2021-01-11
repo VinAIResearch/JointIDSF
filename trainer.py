@@ -93,14 +93,13 @@ class Trainer(object):
                     inputs['token_type_ids'] = batch[2]
                 outputs = self.model(**inputs)
                 loss = outputs[0]
-
+                
                 if self.args.gradient_accumulation_steps > 1:
                     loss = loss / self.args.gradient_accumulation_steps
 
                 loss.backward()
 
                 tr_loss += loss.item()
-                writer.add_scalar("Loss/train", tr_loss, _)
                 if (step + 1) % self.args.gradient_accumulation_steps == 0:
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
 
@@ -133,6 +132,7 @@ class Trainer(object):
             if 0 < self.args.max_steps < global_step or early_stopping.early_stop:
                 train_iterator.close()
                 break
+            writer.add_scalar("Loss/train", tr_loss / global_step, _)
 
         return global_step, tr_loss / global_step
 
