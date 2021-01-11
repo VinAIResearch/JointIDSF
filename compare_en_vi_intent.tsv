@@ -1,0 +1,24 @@
+En	Vi	Gold	Predict
+show flight and prices kansas city to chicago on next wednesday arriving in chicago by 7 pm	hiển thị các chuyến bay và giá tương ứng từ hạ long đến thành phố hồ chí minh vào ngày thứ tư tới và đến thành phố hồ chí minh trước 7 giờ tối	atis_flight#atis_airfare	atis_flight
+what day of the week do flights from nashville to tacoma fly on	Các chuyến bay từ thanh hóa đến đà lạt bay vào ngày nào trong tuần	atis_day_name	atis_flight
+what days of the week do flights from san jose to nashville fly on	Các chuyến bay từ hà nội đến tuy hòa bay vào những ngày nào trong tuần	atis_day_name	atis_flight
+does the airport at burbank have a flight that comes in from kansas city	sân bay ở huế có chuyến bay đến từ hạ long không	atis_flight	atis_airport
+what are the fares for ground transportation in denver	giá vé cho các phương tiện giao thông đường bộ ở đà nẵng là bao nhiêu	atis_ground_fare	atis_ground_service
+at the charlotte airport how many different types of aircraft are there for us air	tại sân bay đà nẵng có bao nhiêu loại máy bay khác nhau của bamboo airways	atis_aircraft	atis_quantity
+list the airfare for american airlines flight 19 from jfk to lax	liệt kê cho tôi giá vé máy bay của chuyến bay 19 của hãng hàng không vietnam airlines từ han đến dad	atis_airfare#atis_flight	atis_airfare
+i need a round trip flight from san diego to washington dc and the fares	tôi cần một chuyến bay khứ hồi từ cao hùng đến washington dc và giá vé của nó	atis_flight#atis_airfare	atis_flight
+i need a round trip from phoenix to washington dc and the fare leaving in the morning	tôi cần thông tin của một chuyến khứ hồi khởi hành vào buổi sáng từ hải phòng đến washington dc và giá vé của nó	atis_flight#atis_airfare	atis_flight
+i need flight and airline information for a flight from denver to salt lake city on monday departing after 5 pm	tôi cần thông tin về chuyến bay và hãng hàng không của chuyến bay từ đà nẵng đến zadar khởi hành sau 5 giờ chiều ngày thứ hai	atis_flight#atis_airline	atis_flight
+i need flight and fare information for thursday departing prior to 9 am from oakland going to salt lake city	tôi cần thông tin chuyến bay và giá vé cho chuyến bay vào ngày thứ năm khởi hành trước 9 giờ sáng từ Aarhus đi đến busan	atis_flight#atis_airfare	atis_flight
+i need flight and fare information departing from oakland to salt lake city on thursday before 8 am	tôi cần thông tin chuyến bay và giá vé của chuyến bay khởi hành từ Aarhus đến brussels vào thứ năm trước 8 giờ sáng	atis_flight#atis_airfare	atis_flight
+i need flight numbers and airlines for flights departing from oakland to salt lake city on thursday departing before 8 am	tôi cần số hiệu chuyến bay và hãng hàng không của các chuyến bay khởi hành từ Aarhus đến thành đô vào ngày thứ năm rời đi trước 8 giờ sáng	atis_flight_no#atis_airline	atis_flight_no
+list la	liệt kê la	atis_city	atis_abbreviation
+list la	danh sách la	atis_city	atis_abbreviation
+give me the flights and fares for a trip to cleveland from miami on wednesday	cung cấp cho tôi các chuyến bay và giá vé cho một chuyến đi đến sendai từ cà mau vào thứ tư	atis_flight	atis_flight#atis_airfare
+give me the meal flights departing early saturday morning from chicago to seattle nonstop	cung cấp cho tôi biết các chuyến bay không dừng có phục vụ bữa ăn khởi hành sớm vào buổi sáng thứ bảy từ thành phố hồ chí minh đến almaty	atis_flight	atis_meal
+how many northwest flights leave st. paul	có bao nhiêu chuyến bay của vietjet khởi hành từ rạch giá	atis_flight	atis_quantity
+how many northwest flights leave washington dc	có bao nhiêu chuyến bay của northwest rời washington dc	atis_flight	atis_quantity
+how many flights does northwest have leaving dulles	có bao nhiêu chuyến bay của vietjet cất cánh từ sân bay đồng hới	atis_flight	atis_quantity
+what is a d9s	từ viết tắt d9s có nghĩa là gì	atis_abbreviation	atis_aircraft
+what is a d9s	d9s có nghĩa là gì	atis_abbreviation	atis_aircraft
+how many flights does alaska airlines have to burbank	hãng hàng không jetstar có bao nhiêu chuyến bay đến huế	atis_flight	atis_quantity

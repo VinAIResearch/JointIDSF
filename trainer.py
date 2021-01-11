@@ -11,6 +11,8 @@ from utils import MODEL_CLASSES, compute_metrics, get_intent_labels, get_slot_la
 
 from early_stopping import EarlyStopping
 
+from torch.utils.tensorboard import SummaryWriter
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +43,7 @@ class Trainer(object):
     def train(self):
         train_sampler = RandomSampler(self.train_dataset)
         train_dataloader = DataLoader(self.train_dataset, sampler=train_sampler, batch_size=self.args.train_batch_size)
-
+        writer = SummaryWriter(log_dir = self.args.model_dir)
         if self.args.max_steps > 0:
             t_total = self.args.max_steps
             self.args.num_train_epochs = self.args.max_steps // (len(train_dataloader) // self.args.gradient_accumulation_steps) + 1
@@ -73,11 +75,12 @@ class Trainer(object):
         self.model.zero_grad()
 
         train_iterator = trange(int(self.args.num_train_epochs), desc="Epoch")
-        early_stopping = EarlyStopping(patience = 5, verbose = True)
+        early_stopping = EarlyStopping(patience = self.args.early_stopping, verbose = True)
 
 
         for _ in train_iterator:
             epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0, leave=True)
+            print("\nEpoch", _)
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)  # GPU or CPU
@@ -97,6 +100,7 @@ class Trainer(object):
                 loss.backward()
 
                 tr_loss += loss.item()
+                writer.add_scalar("Loss/train", tr_loss, _)
                 if (step + 1) % self.args.gradient_accumulation_steps == 0:
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
 
@@ -108,6 +112,11 @@ class Trainer(object):
                     if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
                         print('\nTuning metrics:', self.args.tuning_metric)
                         results = self.evaluate("dev")
+                        writer.add_scalar("Loss/validation", results['loss'], _)
+                        writer.add_scalar("Intent Accuracy/validation", results['intent_acc'], _)
+                        writer.add_scalar("Slot F1/validation", results['slot_f1'], _)
+                        writer.add_scalar("Mean Intent Slot", results['mean_intent_slot'], _)
+                        writer.add_scalar("Sentence Accuracy/validation", results['semantic_frame_acc'], _)
                         early_stopping(results[self.args.tuning_metric], self.model, self.args)
                         if early_stopping.early_stop:
                             print("Early stopping")
@@ -126,6 +135,16 @@ class Trainer(object):
                 break
 
         return global_step, tr_loss / global_step
+
+    def write_evaluation_result(self, out_file, results):
+        out_file = self.args.model_dir + '/' +  out_file
+        w = open(out_file,'w',encoding='utf-8')
+        w.write("***** Eval results *****\n")
+        for key in sorted(results.keys()):
+            to_write = " {key} = {value}".format(key = key, value = str(results[key]))
+            w.write(to_write)
+            w.write('\n')
+        w.close()
 
     def evaluate(self, mode):
         if mode == 'test':
@@ -219,7 +238,8 @@ class Trainer(object):
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
             logger.info("  %s = %s", key, str(results[key]))
-
+        if mode == 'test':
+            self.write_evaluation_result('eval_test_results.txt', results)
         return results
 
     def save_model(self):
