@@ -14,10 +14,8 @@ class JointBERT(BertPreTrainedModel):
         self.bert = BertModel(config=config)  # Load pretrained bert
 
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
-        if self.args.use_intent_context_concat:
-            self.slot_classifier = SlotClassifier(config.hidden_size + self.num_intent_labels, self.num_slot_labels, args.dropout_rate)
-        else:
-            self.slot_classifier = SlotClassifier(config.hidden_size, self.num_slot_labels, args.dropout_rate)
+        embedding_size = 100
+        self.slot_classifier = SlotClassifier(config.hidden_size, self.num_intent_labels, self.num_slot_labels, self.args.use_intent_context_concat, self.args.use_intent_context_attention, self.args.max_seq_len, embedding_size, args.dropout_rate)
 
         if args.use_crf:
             self.crf = CRF(num_tags=self.num_slot_labels, batch_first=True)
@@ -29,24 +27,9 @@ class JointBERT(BertPreTrainedModel):
         pooled_output = outputs[1]  # [CLS]
 
         intent_logits = self.intent_classifier(pooled_output)
-        
-        if self.args.use_intent_context_concat:
-            padded_intent_logits = torch.unsqueeze(intent_logits, 1)
-            padded_intent_logits = padded_intent_logits.expand(-1, self.args.max_seq_len, -1)
-            # intent_context_weight = 
-            hidden_size = sequence_output.shape[2]
-            sequence_output = nn.ConstantPad1d((0,self.num_intent_labels), 1)(sequence_output)
-            sequence_output[:,:, hidden_size:] = padded_intent_logits
+        #feed intent context into slot classifier        
+        slot_logits = self.slot_classifier(sequence_output,intent_logits)
 
-            # pass
-        elif self.args.use_intent_context_attention:
-            padded_intent_logits = torch.unsqueeze(intent_logits, 1)
-            padded_intent_logits = padded_intent_logits.expand(-1, self.args.max_seq_len, -1)
-            hidden_size = sequence_output.shape[2]
-            
-        else:
-            pass            
-        slot_logits = self.slot_classifier(sequence_output)
         total_loss = 0
         # 1. Intent Softmax
         if intent_label_ids is not None:
