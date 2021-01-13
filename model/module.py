@@ -1,50 +1,6 @@
 import torch.nn as nn
 import torch
 
-class IntentClassifier(nn.Module):
-    def __init__(self, input_dim, num_intent_labels, dropout_rate=0.):
-        super(IntentClassifier, self).__init__()
-        self.dropout = nn.Dropout(dropout_rate)
-        self.linear = nn.Linear(input_dim, num_intent_labels)
-
-    def forward(self, x):
-        x = self.dropout(x)
-        # print('intent', x.shape)
-        # print('intent', self.linear(x).shape)
-        return self.linear(x)
-
-class SlotClassifier(nn.Module):
-    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, embedding_size = 100, dropout_rate=0.):
-        super(SlotClassifier, self).__init__()
-        self.use_intent_context_attn = use_intent_context_attn
-        self.use_intent_context_concat = use_intent_context_concat
-        self.max_seq_len = max_seq_len
-        self.num_intent_labels = num_intent_labels
-        self.num_slot_labels = num_slot_labels
-        self.embedding_size = embedding_size
-        if self.use_intent_context_concat:
-            input_dim = input_dim + embedding_size
-        elif self.use_intent_context_attn:
-            pass            
-
-        self.linear_intent_context = nn.Linear(self.num_intent_labels, self.embedding_size, bias = False)
-        self.dropout = nn.Dropout(dropout_rate)
-        self.linear = nn.Linear(input_dim, num_slot_labels)
-
-    def forward(self, x, intent_context):
-        if self.use_intent_context_concat:
-            intent_context = self.linear_intent_context(intent_context)
-            intent_context = torch.unsqueeze(intent_context, 1)
-            intent_context = intent_context.expand(-1, self.max_seq_len, -1)
-            hidden_size = x.shape[2]
-            x = nn.ConstantPad1d((0,self.embedding_size), 1)(x)
-            x[:,:,hidden_size:] = intent_context
-        elif self.use_intent_context_attn:
-            pass
-        x = self.dropout(x)
-        return self.linear(x)
-
-
 class Attention(nn.Module):
     """ Applies attention mechanism on the `context` using the `query`.
 
@@ -133,3 +89,50 @@ class Attention(nn.Module):
         output = self.tanh(output)
 
         return output, attention_weights
+
+class IntentClassifier(nn.Module):
+    def __init__(self, input_dim, num_intent_labels, dropout_rate=0.):
+        super(IntentClassifier, self).__init__()
+        self.dropout = nn.Dropout(dropout_rate)
+        self.linear = nn.Linear(input_dim, num_intent_labels)
+
+    def forward(self, x):
+        x = self.dropout(x)
+        # print('intent', x.shape)
+        # print('intent', self.linear(x).shape)
+        return self.linear(x)
+
+class SlotClassifier(nn.Module):
+    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, embedding_size = 100, dropout_rate=0.):
+        super(SlotClassifier, self).__init__()
+        self.use_intent_context_attn = use_intent_context_attn
+        self.use_intent_context_concat = use_intent_context_concat
+        self.max_seq_len = max_seq_len
+        self.num_intent_labels = num_intent_labels
+        self.num_slot_labels = num_slot_labels
+        self.embedding_size = embedding_size
+        if self.use_intent_context_concat:
+            input_dim = input_dim + embedding_size
+        self.softmax = nn.LogSoftmax()
+        self.attention = Attention(input_dim)
+        self.linear_intent_context = nn.Linear(self.num_intent_labels, self.embedding_size, bias = False)
+        self.dropout = nn.Dropout(dropout_rate)
+        self.linear = nn.Linear(input_dim, num_slot_labels)
+
+    def forward(self, x, intent_context):
+        if self.use_intent_context_concat:
+            intent_context = self.softmax(intent_context)
+            intent_context = self.linear_intent_context(intent_context)
+            intent_context = torch.unsqueeze(intent_context, 1)
+            intent_context = intent_context.expand(-1, self.max_seq_len, -1)
+            hidden_size = x.shape[2]
+            x = nn.ConstantPad1d((0,self.embedding_size), 1)(x)
+            x[:,:,hidden_size:] = intent_context
+        elif self.use_intent_context_attn:
+            intent_context = self.softmax(intent_context)
+            intent_context = self.linear_intent_context(intent_context)
+            intent_context = torch.unsqueeze(intent_context, 1)
+            output, weights = self.attention(x, intent_context)
+            x = output
+        x = self.dropout(x)
+        return self.linear(x)
