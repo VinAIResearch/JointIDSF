@@ -56,13 +56,19 @@ class Attention(nn.Module):
             * **weights** (:class:`torch.FloatTensor` [batch size, output length, query length]):
               Tensor containing attention weights.
         """
+        # print(query.shape)
+        # print(context.shape)
         batch_size, output_len, dimensions = query.size()
         query_len = context.size(1)
-
+        # print('query_len', query_len)
         if self.attention_type == "general":
+            # print('query 0', query.shape)
             query = query.reshape(batch_size * output_len, dimensions)
+            # print('query 1', query.shape)
             query = self.linear_in(query)
+            # print('query 2', query.shape)
             query = query.reshape(batch_size, output_len, dimensions)
+            # print('query 3', query.shape)
 
         # TODO: Include mask on PADDING_INDEX?
 
@@ -103,19 +109,27 @@ class IntentClassifier(nn.Module):
         return self.linear(x)
 
 class SlotClassifier(nn.Module):
-    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, embedding_size = 100, dropout_rate=0.):
+    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, intent_embedding_size = 100, attention_embedding_size = 256, dropout_rate=0.):
         super(SlotClassifier, self).__init__()
         self.use_intent_context_attn = use_intent_context_attn
         self.use_intent_context_concat = use_intent_context_concat
         self.max_seq_len = max_seq_len
         self.num_intent_labels = num_intent_labels
         self.num_slot_labels = num_slot_labels
-        self.embedding_size = embedding_size
+        self.intent_embedding_size = intent_embedding_size
+        self.attention_embedding_size = attention_embedding_size
+
         if self.use_intent_context_concat:
-            input_dim = input_dim + embedding_size
-        self.softmax = nn.LogSoftmax()
-        self.attention = Attention(input_dim)
-        self.linear_intent_context = nn.Linear(self.num_intent_labels, self.embedding_size, bias = False)
+            input_dim = input_dim + self.intent_embedding_size
+        
+        self.softmax = nn.Softmax(dim = -1)
+        
+        self.attention = Attention(attention_embedding_size)
+        
+        if self.use_intent_context_attn:
+            self.intent_embedding_size = self.attention_embedding_size
+
+        self.linear_intent_context = nn.Linear(self.num_intent_labels, self.intent_embedding_size, bias = False)
         self.dropout = nn.Dropout(dropout_rate)
         self.linear = nn.Linear(input_dim, num_slot_labels)
 
@@ -126,12 +140,14 @@ class SlotClassifier(nn.Module):
             intent_context = torch.unsqueeze(intent_context, 1)
             intent_context = intent_context.expand(-1, self.max_seq_len, -1)
             hidden_size = x.shape[2]
-            x = nn.ConstantPad1d((0,self.embedding_size), 1)(x)
+            x = nn.ConstantPad1d((0,self.intent_embedding_size), 1)(x)
             x[:,:,hidden_size:] = intent_context
+        
         elif self.use_intent_context_attn:
             intent_context = self.softmax(intent_context)
             intent_context = self.linear_intent_context(intent_context)
-            intent_context = torch.unsqueeze(intent_context, 1)
+            intent_context = torch.unsqueeze(intent_context, 1) #1: query length (each token)
+            # intent_context = intent_context.expand(-1, self.max_seq_len, -1)
             output, weights = self.attention(x, intent_context)
             x = output
         x = self.dropout(x)

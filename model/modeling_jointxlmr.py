@@ -14,7 +14,7 @@ class JointXLMR(RobertaPreTrainedModel):
         self.num_slot_labels = len(slot_label_lst)
         self.roberta = XLMRobertaModel(config)  # Load pretrained bert
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
-        embedding_size = 100
+        embedding_size = self.num_intent_labels
         self.slot_classifier = SlotClassifier(config.hidden_size, self.num_intent_labels, self.num_slot_labels, self.args.use_intent_context_concat, self.args.use_intent_context_attention, self.args.max_seq_len, embedding_size, args.dropout_rate)
 
 
