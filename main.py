@@ -71,9 +71,10 @@ if __name__ == '__main__':
     parser.add_argument("--use_intent_context_concat", action="store_true", help="Whether to feed context information of intent into slots vectors (simple concatenation)")
     parser.add_argument("--use_intent_context_attention", action="store_true", help="Whether to feed context information of intent into slots vectors (dot product attention)")
     parser.add_argument('--intent_embedding_size', type=int, default=22, help="hidden size of intent context weight vector")
-    parser.add_argument('--attention_embedding_size', type=int, default=256, help="hidden size of attention output vector")
+    parser.add_argument('--attention_embedding_size', type=int, default=768, help="hidden size of attention output vector")
 
     parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
+    parser.add_argument("--attention_type", default="general", type=str, help="Attention type for intent context")
 
     args = parser.parse_args()
 

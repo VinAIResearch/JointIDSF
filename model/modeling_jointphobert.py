@@ -12,10 +12,11 @@ class JointPhoBERT(RobertaPreTrainedModel):
         self.args = args
         self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
-        self.roberta = RobertaModel(config)  # Load pretrained bert
+        self.roberta = RobertaModel(config)  # Load pretrained phobert
 
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
-        self.slot_classifier = SlotClassifier(config.hidden_size, self.num_slot_labels, args.dropout_rate)
+
+        self.slot_classifier = SlotClassifier(config.hidden_size, self.num_intent_labels, self.num_slot_labels, self.args.use_intent_context_concat, self.args.use_intent_context_attention, self.args.max_seq_len, self.args.intent_embedding_size, self.args.attention_embedding_size, self.args.attention_type, args.dropout_rate)
 
         if args.use_crf:
             self.crf = CRF(num_tags=self.num_slot_labels, batch_first=True)
@@ -27,7 +28,7 @@ class JointPhoBERT(RobertaPreTrainedModel):
         pooled_output = outputs[1]  # [CLS]
 
         intent_logits = self.intent_classifier(pooled_output)
-        slot_logits = self.slot_classifier(sequence_output)
+        slot_logits = self.slot_classifier(sequence_output,intent_logits)
 
         total_loss = 0
         # 1. Intent Softmax

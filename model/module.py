@@ -109,7 +109,7 @@ class IntentClassifier(nn.Module):
         return self.linear(x)
 
 class SlotClassifier(nn.Module):
-    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, intent_embedding_size = 100, attention_embedding_size = 256, dropout_rate=0.):
+    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, intent_embedding_size = 100, attention_embedding_size = 256, attention_type = 'general', dropout_rate=0.):
         super(SlotClassifier, self).__init__()
         self.use_intent_context_attn = use_intent_context_attn
         self.use_intent_context_concat = use_intent_context_concat
@@ -118,13 +118,13 @@ class SlotClassifier(nn.Module):
         self.num_slot_labels = num_slot_labels
         self.intent_embedding_size = intent_embedding_size
         self.attention_embedding_size = attention_embedding_size
-
+        self.attention_type = attention_type
         if self.use_intent_context_concat:
             input_dim = input_dim + self.intent_embedding_size
         
         self.softmax = nn.Softmax(dim = -1)
         
-        self.attention = Attention(attention_embedding_size)
+        self.attention = Attention(attention_embedding_size, self.attention_type)
         
         if self.use_intent_context_attn:
             self.intent_embedding_size = self.attention_embedding_size

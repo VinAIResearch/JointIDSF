@@ -9,7 +9,7 @@ from seqeval.metrics import precision_score, recall_score, f1_score
 from transformers import BertConfig, DistilBertConfig, AlbertConfig, XLMRobertaConfig, RobertaConfig, AutoConfig
 from transformers import BertTokenizer, DistilBertTokenizer, AlbertTokenizer, XLMRobertaTokenizer, RobertaTokenizer, AutoTokenizer
 
-from model import JointBERT, JointDistilBERT, JointAlbert, JointXLMR, JointMBERT, JointRoberta
+from model import JointBERT, JointDistilBERT, JointAlbert, JointXLMR, JointMBERT, JointRoberta, JointPhoBERT
 
 MODEL_CLASSES = {
     'bert': (BertConfig, JointBERT, BertTokenizer),
@@ -17,7 +17,8 @@ MODEL_CLASSES = {
     'distilbert': (DistilBertConfig, JointDistilBERT, DistilBertTokenizer),
     'albert': (AlbertConfig, JointAlbert, AlbertTokenizer),
     'roberta': (RobertaConfig, JointRoberta, RobertaTokenizer),
-    'xlmr': (XLMRobertaConfig, JointXLMR, XLMRobertaTokenizer)
+    'xlmr': (XLMRobertaConfig, JointXLMR, XLMRobertaTokenizer),
+    'phobert': (RobertaConfig, JointPhoBERT, AutoTokenizer)
 }
 
 MODEL_PATH_MAP = {
@@ -26,7 +27,8 @@ MODEL_PATH_MAP = {
     'distilbert': 'distilbert-base-uncased',
     'albert': 'albert-xxlarge-v1',
     'roberta': 'roberta-base',
-    'xlmr': 'xlm-roberta-base'
+    'xlmr': 'xlm-roberta-base',
+    'phobert': 'vinai/phobert-base'
 }
 
 
