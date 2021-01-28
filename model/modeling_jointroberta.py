@@ -25,7 +25,7 @@ class JointRoberta(RobertaPreTrainedModel):
 
         intent_logits = self.intent_classifier(pooled_output)
         #feed intent context into slot classifier        
-        slot_logits = self.slot_classifier(sequence_output,intent_logits)
+        slot_logits = self.slot_classifier(sequence_output, intent_logits, attention_mask)
 
         total_loss = 0
         # 1. Intent Softmax

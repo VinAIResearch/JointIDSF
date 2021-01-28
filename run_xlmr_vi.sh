@@ -1,11 +1,11 @@
-lr_list=(1e-5 2e-5 3e-5 4e-5 5e-5 6e-5)
+lr_list=(1e-5 2e-5 3e-5 4e-5 5e-5)
 for lr in "${lr_list[@]}" 
 do
 echo "${lr}"
-export MODEL_DIR=viatis_xlmr
+export MODEL_DIR=viatisthinh_xlmr
 export MODEL_DIR=$MODEL_DIR"/"$lr
 echo "${MODEL_DIR}"
-/usr/bin/python3.7 main.py --task vi-atis \
+/usr/bin/python3.7 main.py --task vi-atis-thinh \
                   --model_type xlmr \
                   --model_dir $MODEL_DIR \
                   --data_dir data \

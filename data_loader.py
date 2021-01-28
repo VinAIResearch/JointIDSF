@@ -110,6 +110,8 @@ class JointProcessor(object):
         """
         if self.args.task == 'vi-atis':
             data_path = os.path.join(self.args.data_dir, self.args.task, mode, self.args.token_level)
+        elif self.args.task == 'vi-atis-thinh':
+            data_path = os.path.join(self.args.data_dir, self.args.task, mode, self.args.token_level)
         else:
             data_path = os.path.join(self.args.data_dir, self.args.task, mode)
         logger.info("LOOKING AT {}".format(data_path))
@@ -122,7 +124,9 @@ class JointProcessor(object):
 processors = {
     "atis": JointProcessor,
     "snips": JointProcessor,
-    "vi-atis": JointProcessor
+    "vi-atis": JointProcessor,
+    "vi-atis-thinh": JointProcessor,
+    "atis-thinh": JointProcessor
 }
 
 

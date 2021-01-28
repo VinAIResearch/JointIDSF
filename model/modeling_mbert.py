@@ -25,7 +25,7 @@ class JointMBERT(BertPreTrainedModel):
         sequence_output = outputs[0]
         pooled_output = outputs[1]  # [CLS]
         intent_logits = self.intent_classifier(pooled_output)
-        slot_logits = self.slot_classifier(sequence_output,intent_logits)
+        slot_logits = self.slot_classifier(sequence_output, intent_logits, attention_mask)
 
         total_loss = 0
         # 1. Intent Softmax

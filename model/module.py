@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+import numpy as np
 
 class Attention(nn.Module):
     """ Applies attention mechanism on the `context` using the `query`.
@@ -36,12 +37,11 @@ class Attention(nn.Module):
         self.attention_type = attention_type
         if self.attention_type == 'general':
             self.linear_in = nn.Linear(dimensions, dimensions, bias=False)
-
         self.linear_out = nn.Linear(dimensions * 2, dimensions, bias=False)
-        self.softmax = nn.Softmax(dim=-1)
+        self.softmax = nn.LogSoftmax(dim=-1)
         self.tanh = nn.Tanh()
 
-    def forward(self, query, context):
+    def forward(self, query, context, attention_mask):
         """
         Args:
             query (:class:`torch.FloatTensor` [batch size, output length, dimensions]): Sequence of
@@ -71,15 +71,22 @@ class Attention(nn.Module):
             # print('query 3', query.shape)
 
         # TODO: Include mask on PADDING_INDEX?
-
+        # mask = 
         # (batch_size, output_len, dimensions) * (batch_size, query_len, dimensions) ->
         # (batch_size, output_len, query_len)
         attention_scores = torch.bmm(query, context.transpose(1, 2).contiguous())
-
         # Compute weights across every context sequence
         attention_scores = attention_scores.view(batch_size * output_len, query_len)
+        
+        # Create attention mask
+        attention_mask = torch.unsqueeze(attention_mask,2)
+        attention_mask = attention_mask.view(batch_size * output_len, query_len)
+        # Apply mask before applying softmax
+        attention_scores.masked_fill_(attention_mask == 0, -np.inf)
+        attention_scores = torch.squeeze(attention_scores,1)
         attention_weights = self.softmax(attention_scores)
         attention_weights = attention_weights.view(batch_size, output_len, query_len)
+        # from IPython import embed; embed()
 
         # (batch_size, output_len, query_len) * (batch_size, query_len, dimensions) ->
         # (batch_size, output_len, dimensions)
@@ -109,7 +116,7 @@ class IntentClassifier(nn.Module):
         return self.linear(x)
 
 class SlotClassifier(nn.Module):
-    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, intent_embedding_size = 100, attention_embedding_size = 256, attention_type = 'general', dropout_rate=0.):
+    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, intent_embedding_size = 22, attention_embedding_size = 768, attention_type = 'general', dropout_rate=0.):
         super(SlotClassifier, self).__init__()
         self.use_intent_context_attn = use_intent_context_attn
         self.use_intent_context_concat = use_intent_context_concat
@@ -119,10 +126,11 @@ class SlotClassifier(nn.Module):
         self.intent_embedding_size = intent_embedding_size
         self.attention_embedding_size = attention_embedding_size
         self.attention_type = attention_type
+        # print('attention_type', self.attention_type)
         if self.use_intent_context_concat:
             input_dim = input_dim + self.intent_embedding_size
         
-        self.softmax = nn.Softmax(dim = -1)
+        self.softmax = nn.LogSoftmax(dim = -1)
         
         self.attention = Attention(attention_embedding_size, self.attention_type)
         
@@ -133,7 +141,7 @@ class SlotClassifier(nn.Module):
         self.dropout = nn.Dropout(dropout_rate)
         self.linear = nn.Linear(input_dim, num_slot_labels)
 
-    def forward(self, x, intent_context):
+    def forward(self, x, intent_context, attention_mask):
         if self.use_intent_context_concat:
             intent_context = self.softmax(intent_context)
             intent_context = self.linear_intent_context(intent_context)
@@ -148,7 +156,7 @@ class SlotClassifier(nn.Module):
             intent_context = self.linear_intent_context(intent_context)
             intent_context = torch.unsqueeze(intent_context, 1) #1: query length (each token)
             # intent_context = intent_context.expand(-1, self.max_seq_len, -1)
-            output, weights = self.attention(x, intent_context)
+            output, weights = self.attention(x, intent_context, attention_mask)
             x = output
         x = self.dropout(x)
         return self.linear(x)
