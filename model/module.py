@@ -33,10 +33,12 @@ class Attention(nn.Module):
 
         if attention_type not in ['dot', 'general']:
             raise ValueError('Invalid attention type selected.')
-
+        hidden_size = 768
+        self.dimensions = dimensions
         self.attention_type = attention_type
+        # self.linear_query = nn.Linear(hidden_size, dimensions)
         if self.attention_type == 'general':
-            self.linear_in = nn.Linear(dimensions, dimensions, bias=False)
+            self.linear_in = nn.Linear(hidden_size, dimensions, bias=False)
         self.linear_out = nn.Linear(dimensions * 2, dimensions, bias=False)
         self.softmax = nn.LogSoftmax(dim=-1)
         self.tanh = nn.Tanh()
@@ -58,31 +60,30 @@ class Attention(nn.Module):
         """
         # print(query.shape)
         # print(context.shape)
-        batch_size, output_len, dimensions = query.size()
+        # query = self.linear_query(query)
+        
+        batch_size, output_len, hidden_size = query.size()
         query_len = context.size(1)
         # print('query_len', query_len)
         if self.attention_type == "general":
             # print('query 0', query.shape)
-            query = query.reshape(batch_size * output_len, dimensions)
+            query = query.reshape(batch_size * output_len, hidden_size)
             # print('query 1', query.shape)
             query = self.linear_in(query)
             # print('query 2', query.shape)
-            query = query.reshape(batch_size, output_len, dimensions)
+            query = query.reshape(batch_size, output_len, self.dimensions)
             # print('query 3', query.shape)
 
-        # TODO: Include mask on PADDING_INDEX?
-        # mask = 
         # (batch_size, output_len, dimensions) * (batch_size, query_len, dimensions) ->
         # (batch_size, output_len, query_len)
         attention_scores = torch.bmm(query, context.transpose(1, 2).contiguous())
         # Compute weights across every context sequence
         attention_scores = attention_scores.view(batch_size * output_len, query_len)
         
-        # Create attention mask
-        attention_mask = torch.unsqueeze(attention_mask,2)
-        attention_mask = attention_mask.view(batch_size * output_len, query_len)
-        # Apply mask before applying softmax
-        attention_scores.masked_fill_(attention_mask == 0, -np.inf)
+        # Create attention mask, apply attention mask before softmax
+        # attention_mask = torch.unsqueeze(attention_mask,2)
+        # attention_mask = attention_mask.view(batch_size * output_len, query_len)
+        # attention_scores.masked_fill_(attention_mask == 0, -np.inf)
         attention_scores = torch.squeeze(attention_scores,1)
         attention_weights = self.softmax(attention_scores)
         attention_weights = attention_weights.view(batch_size, output_len, query_len)
@@ -94,11 +95,11 @@ class Attention(nn.Module):
 
         # concat -> (batch_size * output_len, 2*dimensions)
         combined = torch.cat((mix, query), dim=2)
-        combined = combined.view(batch_size * output_len, 2 * dimensions)
+        combined = combined.view(batch_size * output_len, 2 * self.dimensions)
 
         # Apply linear_out on every 2nd dimension of concat
         # output -> (batch_size, output_len, dimensions)
-        output = self.linear_out(combined).view(batch_size, output_len, dimensions)
+        output = self.linear_out(combined).view(batch_size, output_len, self.dimensions)
         output = self.tanh(output)
 
         return output, attention_weights
@@ -129,7 +130,9 @@ class SlotClassifier(nn.Module):
         # print('attention_type', self.attention_type)
         if self.use_intent_context_concat:
             input_dim = input_dim + self.intent_embedding_size
-        
+        elif self.use_intent_context_attn:
+            input_dim = self.attention_embedding_size
+
         self.softmax = nn.LogSoftmax(dim = -1)
         
         self.attention = Attention(attention_embedding_size, self.attention_type)
