@@ -128,21 +128,22 @@ class SlotClassifier(nn.Module):
         self.attention_embedding_size = attention_embedding_size
         self.attention_type = attention_type
         # print('attention_type', self.attention_type)
-        output_dim = input_dim
+        
+        output_dim = input_dim #base model
         if self.use_intent_context_concat:
             output_dim = self.intent_embedding_size * 2
         elif self.use_intent_context_attn:
             output_dim = self.attention_embedding_size
+            self.intent_embedding_size = self.attention_embedding_size
 
-        self.softmax = nn.Softmax(dim = -1)
+        self.softmax = nn.Softmax(dim = -1) #softmax layer for intent logits
         
         self.attention = Attention(attention_embedding_size, self.attention_type)
         
-        if self.use_intent_context_attn:
-            self.intent_embedding_size = self.attention_embedding_size
-
+        #project intent vector and slot vector to have the same dimensions
         self.linear_intent_context = nn.Linear(self.num_intent_labels, self.intent_embedding_size, bias = False)
         self.linear_slot = nn.Linear(input_dim, self.intent_embedding_size, bias=False)
+        #output
         self.dropout = nn.Dropout(dropout_rate)
         self.linear = nn.Linear(output_dim, num_slot_labels)
 
