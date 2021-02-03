@@ -40,7 +40,7 @@ class Attention(nn.Module):
         if self.attention_type == 'general':
             self.linear_in = nn.Linear(hidden_size, dimensions, bias=False)
         self.linear_out = nn.Linear(dimensions * 2, dimensions, bias=False)
-        self.softmax = nn.LogSoftmax(dim=-1)
+        self.softmax = nn.Softmax(dim=1)
         self.tanh = nn.Tanh()
 
     def forward(self, query, context, attention_mask):
@@ -67,27 +67,27 @@ class Attention(nn.Module):
         # print('query_len', query_len)
         if self.attention_type == "general":
             # print('query 0', query.shape)
-            query = query.reshape(batch_size * output_len, hidden_size)
+            # query = query.reshape(batch_size * output_len, hidden_size)
             # print('query 1', query.shape)
             query = self.linear_in(query)
             # print('query 2', query.shape)
-            query = query.reshape(batch_size, output_len, self.dimensions)
+            # query = query.reshape(batch_size, output_len, self.dimensions)
             # print('query 3', query.shape)
 
         # (batch_size, output_len, dimensions) * (batch_size, query_len, dimensions) ->
         # (batch_size, output_len, query_len)
         attention_scores = torch.bmm(query, context.transpose(1, 2).contiguous())
         # Compute weights across every context sequence
-        attention_scores = attention_scores.view(batch_size * output_len, query_len)
+        # attention_scores = attention_scores.view(batch_size * output_len, query_len)
         
         # Create attention mask, apply attention mask before softmax
         # attention_mask = torch.unsqueeze(attention_mask,2)
         # attention_mask = attention_mask.view(batch_size * output_len, query_len)
         # attention_scores.masked_fill_(attention_mask == 0, -np.inf)
-        attention_scores = torch.squeeze(attention_scores,1)
+        # attention_scores = torch.squeeze(attention_scores,1)
         attention_weights = self.softmax(attention_scores)
-        attention_weights = attention_weights.view(batch_size, output_len, query_len)
         # from IPython import embed; embed()
+        # attention_weights = attention_weights.view(batch_size, output_len, query_len)
 
         # (batch_size, output_len, query_len) * (batch_size, query_len, dimensions) ->
         # (batch_size, output_len, dimensions)
@@ -128,12 +128,13 @@ class SlotClassifier(nn.Module):
         self.attention_embedding_size = attention_embedding_size
         self.attention_type = attention_type
         # print('attention_type', self.attention_type)
+        output_dim = input_dim
         if self.use_intent_context_concat:
-            input_dim = input_dim + self.intent_embedding_size
+            output_dim = self.intent_embedding_size * 2
         elif self.use_intent_context_attn:
-            input_dim = self.attention_embedding_size
+            output_dim = self.attention_embedding_size
 
-        self.softmax = nn.LogSoftmax(dim = -1)
+        self.softmax = nn.Softmax(dim = -1)
         
         self.attention = Attention(attention_embedding_size, self.attention_type)
         
@@ -141,8 +142,9 @@ class SlotClassifier(nn.Module):
             self.intent_embedding_size = self.attention_embedding_size
 
         self.linear_intent_context = nn.Linear(self.num_intent_labels, self.intent_embedding_size, bias = False)
+        self.linear_slot = nn.Linear(input_dim, self.intent_embedding_size, bias=False)
         self.dropout = nn.Dropout(dropout_rate)
-        self.linear = nn.Linear(input_dim, num_slot_labels)
+        self.linear = nn.Linear(output_dim, num_slot_labels)
 
     def forward(self, x, intent_context, attention_mask):
         if self.use_intent_context_concat:
@@ -150,6 +152,8 @@ class SlotClassifier(nn.Module):
             intent_context = self.linear_intent_context(intent_context)
             intent_context = torch.unsqueeze(intent_context, 1)
             intent_context = intent_context.expand(-1, self.max_seq_len, -1)
+            # print(x.shape)
+            x = self.linear_slot(x)
             hidden_size = x.shape[2]
             x = nn.ConstantPad1d((0,self.intent_embedding_size), 1)(x)
             x[:,:,hidden_size:] = intent_context
