@@ -15,9 +15,9 @@ echo "${MODEL_DIR}"
                   --logging_steps 140 \
                   --num_train_epochs 1000 \
                   --tuning_metric mean_intent_slot \
-                  --use_intent_context_concat \
+                  --use_intent_context_attention \
                   --intent_embedding_size 256 \
-                  --attention_embedding_size 768 \
+                  --attention_embedding_size 256 \
                   --use_crf \
                   --learning_rate $lr
 done

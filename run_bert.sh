@@ -11,6 +11,7 @@ echo "${MODEL_DIR}"
                   --data_dir data \
                   --do_train \
                   --do_eval \
+                  --seed 1 \
                   --save_steps 140 \
                   --logging_steps 140 \
                   --num_train_epochs 1000 \

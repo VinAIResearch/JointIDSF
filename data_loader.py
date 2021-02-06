@@ -108,7 +108,7 @@ class JointProcessor(object):
         Args:
             mode: train, dev, test
         """
-        if self.args.task == 'vi-atis' or self.arg.task == 'vi-atis-fix':
+        if self.args.task == 'vi-atis' or self.args.task == 'vi-atis-fix':
             data_path = os.path.join(self.args.data_dir, self.args.task, mode, self.args.token_level)
         else:
             data_path = os.path.join(self.args.data_dir, self.args.task, mode)

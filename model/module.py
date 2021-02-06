@@ -50,7 +50,8 @@ class Attention(nn.Module):
                 queries to query the context.
             context (:class:`torch.FloatTensor` [batch size, query length, dimensions]): Data
                 overwhich to apply the attention mechanism.
-
+            output length: length of utterance
+            query length: length of each token (1)
         Returns:
             :class:`tuple` with `output` and `weights`:
             * **output** (:class:`torch.LongTensor` [batch size, output length, dimensions]):
@@ -92,7 +93,7 @@ class Attention(nn.Module):
         # (batch_size, output_len, query_len) * (batch_size, query_len, dimensions) ->
         # (batch_size, output_len, dimensions)
         mix = torch.bmm(attention_weights, context)
-
+        # from IPython import embed; embed()
         # concat -> (batch_size * output_len, 2*dimensions)
         combined = torch.cat((mix, query), dim=2)
         # combined = combined.view(batch_size * output_len, 2 * self.dimensions)
