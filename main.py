@@ -60,10 +60,10 @@ if __name__ == '__main__':
     parser.add_argument("--ignore_index", default=0, type=int,
                         help='Specifies a target value that is ignored and does not contribute to the input gradient')
 
-    parser.add_argument('--slot_loss_coef', type=float, default=1.0, help='Coefficient for the slot loss.')
+    parser.add_argument('--intent_loss_coef', type=float, default=0.5, help='Coefficient for the intent loss.')
     parser.add_argument('--token_level', type = str, default = "syllable", help="Tokens are at syllable level or word level (Vietnamese)")
     parser.add_argument('--early_stopping', type=int, default=5, help="Number of unincreased validation step to wait for early stopping")
-
+    parser.add_argument('--gpu_id', type=int, default=0, help="Select gpu id")
     # CRF option
     parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
 

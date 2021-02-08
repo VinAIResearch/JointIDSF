@@ -40,7 +40,7 @@ class Attention(nn.Module):
         if self.attention_type == 'general':
             self.linear_in = nn.Linear(hidden_size, dimensions, bias=False)
         self.linear_out = nn.Linear(dimensions * 2, dimensions, bias=False)
-        self.softmax = nn.LogSoftmax(dim=1)
+        self.softmax = nn.Softmax(dim=1)
         self.tanh = nn.Tanh()
 
     def forward(self, query, context, attention_mask):
@@ -82,7 +82,7 @@ class Attention(nn.Module):
         # attention_scores = attention_scores.view(batch_size * output_len, query_len)
         
         # Create attention mask, apply attention mask before softmax
-        # attention_mask = torch.unsqueeze(attention_mask,2)
+        attention_mask = torch.unsqueeze(attention_mask,2)
         # attention_mask = attention_mask.view(batch_size * output_len, query_len)
         # attention_scores.masked_fill_(attention_mask == 0, -np.inf)
         # attention_scores = torch.squeeze(attention_scores,1)
@@ -139,7 +139,7 @@ class SlotClassifier(nn.Module):
             output_dim = self.attention_embedding_size
             self.intent_embedding_size = self.attention_embedding_size
 
-        self.softmax = nn.LogSoftmax(dim = -1) #softmax layer for intent logits
+        self.softmax = nn.Softmax(dim = -1) #softmax layer for intent logits
         
         self.attention = Attention(attention_embedding_size, self.attention_type)
         

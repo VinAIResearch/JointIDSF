@@ -37,6 +37,9 @@ class Trainer(object):
                                                       slot_label_lst=self.slot_label_lst)
 
         # GPU or CPU
+        torch.cuda.set_device(self.args.gpu_id)
+        print(self.args.gpu_id)
+        print(torch.cuda.current_device())
         self.device = "cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu"
         self.model.to(self.device)
 

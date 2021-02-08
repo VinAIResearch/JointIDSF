@@ -19,5 +19,6 @@ echo "${MODEL_DIR}"
                   --intent_embedding_size 256 \
                   --attention_embedding_size 256 \
                   --use_crf \
+                  --gpu_id 1 \
                   --learning_rate $lr
 done

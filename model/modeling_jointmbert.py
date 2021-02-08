@@ -36,7 +36,7 @@ class JointMBERT(BertPreTrainedModel):
             else:
                 intent_loss_fct = nn.CrossEntropyLoss()
                 intent_loss = intent_loss_fct(intent_logits.view(-1, self.num_intent_labels), intent_label_ids.view(-1))
-            total_loss += intent_loss
+            total_loss += self.args.intent_loss_coef * intent_loss
 
         # 2. Slot Softmax
         if slot_labels_ids is not None:
@@ -53,7 +53,7 @@ class JointMBERT(BertPreTrainedModel):
                     slot_loss = slot_loss_fct(active_logits, active_labels)
                 else:
                     slot_loss = slot_loss_fct(slot_logits.view(-1, self.num_slot_labels), slot_labels_ids.view(-1))
-            total_loss += self.args.slot_loss_coef * slot_loss
+            total_loss += (1 -  self.args.intent_loss_coef) * slot_loss
 
         outputs = ((intent_logits, slot_logits),) + outputs[2:]  # add hidden states and attention if they are here
 
