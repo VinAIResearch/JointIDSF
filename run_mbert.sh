@@ -9,6 +9,7 @@ echo "${MODEL_DIR}"
                   --model_type mbert \
                   --model_dir $MODEL_DIR \
                   --data_dir data \
+                  --seed 1 \
                   --do_train \
                   --do_eval \
                   --save_steps 140 \
