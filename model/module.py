@@ -82,7 +82,7 @@ class Attention(nn.Module):
         # attention_scores = attention_scores.view(batch_size * output_len, query_len)
         
         # Create attention mask, apply attention mask before softmax
-        attention_mask = torch.unsqueeze(attention_mask,2)
+        # attention_mask = torch.unsqueeze(attention_mask,2)
         # attention_mask = attention_mask.view(batch_size * output_len, query_len)
         # attention_scores.masked_fill_(attention_mask == 0, -np.inf)
         # attention_scores = torch.squeeze(attention_scores,1)
@@ -101,9 +101,9 @@ class Attention(nn.Module):
         # Apply linear_out on every 2nd dimension of concat
         # output -> (batch_size, output_len, dimensions)
         # output = self.linear_out(combined).view(batch_size, output_len, self.dimensions)
-        output = self.linear_out(combined)
+        # output = self.linear_out(combined)
 
-        output = self.tanh(output)
+        output = self.tanh(combined)
 
         return output, attention_weights
 
@@ -136,7 +136,7 @@ class SlotClassifier(nn.Module):
         if self.use_intent_context_concat:
             output_dim = self.intent_embedding_size
         elif self.use_intent_context_attn:
-            output_dim = self.attention_embedding_size
+            output_dim = self.attention_embedding_size*2
             self.intent_embedding_size = self.attention_embedding_size
 
         self.softmax = nn.LogSoftmax(dim = -1) #softmax layer for intent logits
