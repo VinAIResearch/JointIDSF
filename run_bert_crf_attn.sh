@@ -2,7 +2,7 @@ lr_list=(1e-5 2e-5 3e-5 4e-5 5e-5)
 for lr in "${lr_list[@]}" 
 do
 echo "${lr}"
-export MODEL_DIR=atis_bert_crf_attn_500
+export MODEL_DIR=atis_bert_crf_attn_200_0.4
 export MODEL_DIR=$MODEL_DIR"/"$lr
 echo "${MODEL_DIR}"
 /usr/bin/python3.7 main.py --task atis \
@@ -18,6 +18,7 @@ echo "${MODEL_DIR}"
                   --logging_steps 140 \
                   --tuning_metric mean_intent_slot \
                   --use_intent_context_attention \
-                  --attention_embedding_size 500 \
-                  --learning_rate $lr
+                  --attention_embedding_size 200 \
+                  --learning_rate $lr \
+                  --intent_loss_coef 0.4 
 done
