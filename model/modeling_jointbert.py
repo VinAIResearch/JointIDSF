@@ -27,6 +27,9 @@ class JointBERT(BertPreTrainedModel):
 
         intent_logits = self.intent_classifier(pooled_output)
         #feed intent context into slot classifier        
+        if self.args.embedding_type == 'hard':
+            intent_logits = 
+            pass
         slot_logits = self.slot_classifier(sequence_output, intent_logits, attention_mask)
 
         total_loss = 0
