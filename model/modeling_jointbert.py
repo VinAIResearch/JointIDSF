@@ -28,9 +28,13 @@ class JointBERT(BertPreTrainedModel):
         intent_logits = self.intent_classifier(pooled_output)
         #feed intent context into slot classifier        
         if self.args.embedding_type == 'hard':
-            intent_logits = 
-            pass
-        slot_logits = self.slot_classifier(sequence_output, intent_logits, attention_mask)
+            hard_intent_logits = torch.zeros(intent_logits.shape)
+            for i,sample in enumerate(intent_logits):
+                max_idx = torch.argmax(sample)
+                hard_intent_logits[i][max_idx] = 1
+            slot_logits = self.slot_classifier(sequence_output, hard_intent_logits, attention_mask)
+        else:
+            slot_logits = self.slot_classifier(sequence_output, intent_logits, attention_mask)
 
         total_loss = 0
         # 1. Intent Softmax

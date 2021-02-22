@@ -2,7 +2,7 @@ seed_list=(1 2 3 4 5)
 for s in "${seed_list[@]}" 
 do
 echo "${s}"
-export MODEL_DIR=viatis_mbert_crf_attn_200
+export MODEL_DIR=viatis_mbert_crf_attn_200_hard
 export lr=2e-5
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$s
 echo "${MODEL_DIR}"
@@ -21,6 +21,5 @@ echo "${MODEL_DIR}"
                   --attention_embedding_size 200 \
                   --use_crf \
                   --gpu_id 1 \
-                  --intent_loss_coef 0.3 \
                   --learning_rate $lr
 done

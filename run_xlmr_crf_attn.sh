@@ -21,6 +21,5 @@ echo "${MODEL_DIR}"
                   --attention_embedding_size 200 \
                   --use_crf \
                   --gpu_id 1 \
-                  --intent_loss_coef 0.3 \
                   --learning_rate $lr
 done

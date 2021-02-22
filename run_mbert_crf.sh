@@ -2,7 +2,7 @@ seed_list=(1 2 3 4 5)
 for s in "${seed_list[@]}" 
 do
 echo "${s}"
-export MODEL_DIR=viatis_mbert
+export MODEL_DIR=viatis_mbert_crf
 export lr=2e-5
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$s
 echo "${MODEL_DIR}"
