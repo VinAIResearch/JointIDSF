@@ -17,6 +17,6 @@ echo "${MODEL_DIR}"
                   --logging_steps 140 \
                   --num_train_epochs 1000 \
                   --tuning_metric mean_intent_slot \
-                  --gpu_id 1 \
+                  --gpu_id 0 \
                   --learning_rate $lr
 done

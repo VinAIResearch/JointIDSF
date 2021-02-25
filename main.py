@@ -76,6 +76,7 @@ if __name__ == '__main__':
     parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
     parser.add_argument("--attention_type", default="general", type=str, help="Attention type for intent context ('general' / 'dot')")
     parser.add_argument("--embedding_type", default="soft", type=str, help="Embedding type for intent vector (hard/soft)")
+    parser.add_argument("--use_attention_mask", action="store_true", help="Whether to use attention mask")
 
     args = parser.parse_args()
 
