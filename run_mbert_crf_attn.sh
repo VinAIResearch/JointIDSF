@@ -1,4 +1,4 @@
-rm data/cache*
+# rm data/cache*
 seed_list=(1 2 3 4 5)
 lr_list=(1e-5 2e-5 3e-5 4e-5 5e-5)
 coef_list=(0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9)
@@ -21,7 +21,7 @@ echo "${MODEL_DIR}"
                   --do_eval \
                   --save_steps 140 \
                   --logging_steps 140 \
-                  --num_train_epochs 1000 \
+                  --num_train_epochs 50 \
                   --tuning_metric mean_intent_slot \
                   --use_intent_context_attention \
                   --attention_embedding_size 200 \
