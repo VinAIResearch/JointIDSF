@@ -14,7 +14,7 @@ O O O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-depart_time.period
 O O O O O O O O O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code
 O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.airport_name I-toloc.airport_name I-toloc.airport_name I-toloc.airport_name O O B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time O B-airline_name I-airline_name
 O O O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name
-O O O O O O O O B-depart_time.period_of_day B-depart_time.period_mod O B-fromloc.city_name I-fromloc.city_name O B-period_of_day I-period_of_day I-period_of_day O B-depart_date.day_number I-depart_date.day_number B-depart_date.month_name I-depart_date.month_name O O O O O B-return_time.period_of_day B-return_date.day_number I-return_date.day_number B-return_date.month_name I-return_date.month_name
+O O O O O O O O B-depart_time.period_of_day B-depart_time.period_mod O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name O B-depart_date.day_number I-depart_date.day_number B-depart_date.month_name I-depart_date.month_name O O O O O B-return_time.period_of_day B-return_date.day_number I-return_date.day_number B-return_date.month_name I-return_date.month_name
 O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O O O B-stoploc.city_name
 O O O O B-restriction_code O O
 O O O O O O O O O O O O O B-city_name I-city_name
