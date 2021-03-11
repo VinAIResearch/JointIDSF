@@ -22,6 +22,9 @@ def main(args):
     if args.do_eval:
         trainer.load_model()
         trainer.evaluate("test")
+    if args.do_eval_dev:
+        trainer.load_model()
+        trainer.evaluate("dev")
 
 
 if __name__ == '__main__':
@@ -55,6 +58,8 @@ if __name__ == '__main__':
 
     parser.add_argument("--do_train", action="store_true", help="Whether to run training.")
     parser.add_argument("--do_eval", action="store_true", help="Whether to run eval on the test set.")
+    parser.add_argument("--do_eval_dev", action="store_true", help="Whether to run eval on the dev set.")
+
     parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
 
     parser.add_argument("--ignore_index", default=0, type=int,
