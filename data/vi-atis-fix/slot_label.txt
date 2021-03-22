@@ -53,6 +53,7 @@ B-toloc.state_name
 B-month_name
 B-class_type
 I-time
+I-toloc.country_name
 I-depart_time.end_time
 I-toloc.airport_name
 B-time
@@ -119,6 +120,7 @@ I-aircraft_code
 I-fromloc.city_name
 B-depart_date.day_name
 I-arrive_date.day_number
+I-today_relative
 B-arrive_time.period_mod
 B-depart_date.today_relative
 I-arrive_date.day_name
@@ -142,5 +144,6 @@ B-days_code
 I-flight_time
 B-transport_type
 I-economy
+I-compartment
 B-depart_date.month_name
 B-flight_days
