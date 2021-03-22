@@ -21,10 +21,10 @@ def main(args):
 
     if args.do_eval:
         trainer.load_model()
-        trainer.evaluate("test",100)
+        trainer.evaluate("test")
     if args.do_eval_dev:
         trainer.load_model()
-        trainer.evaluate("dev",100)
+        trainer.evaluate("dev")
 
 
 if __name__ == '__main__':
