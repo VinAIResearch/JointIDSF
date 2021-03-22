@@ -33,14 +33,14 @@ class Attention(nn.Module):
 
         if attention_type not in ['dot', 'general']:
             raise ValueError('Invalid attention type selected.')
-        hidden_size = 768
+        # hidden_size = 768
         self.dimensions = dimensions
         self.attention_type = attention_type
         # self.linear_query = nn.Linear(hidden_size, dimensions)
-        if self.attention_type == 'general':
-            self.linear_in = nn.Linear(hidden_size, dimensions, bias=False)
+        # if self.attention_type == 'general':
+        #     self.linear_in = nn.Linear(hidden_size, dimensions, bias=False)
         self.linear_out = nn.Linear(dimensions * 2, dimensions, bias=False)
-        self.softmax = nn.LogSoftmax(dim=1)
+        self.softmax = nn.Softmax(dim=1)
         self.tanh = nn.Tanh()
 
     def forward(self, query, context, attention_mask):
@@ -66,11 +66,11 @@ class Attention(nn.Module):
         batch_size, output_len, hidden_size = query.size()
         query_len = context.size(1)
         # print('query_len', query_len)
-        if self.attention_type == "general":
+        # if self.attention_type == "general":
             # print('query 0', query.shape)
             # query = query.reshape(batch_size * output_len, hidden_size)
             # print('query 1', query.shape)
-            query = self.linear_in(query)
+            # query = self.linear_in(query)
             # print('query 2', query.shape)
             # query = query.reshape(batch_size, output_len, self.dimensions)
             # print('query 3', query.shape)
@@ -101,10 +101,10 @@ class Attention(nn.Module):
         # Apply linear_out on every 2nd dimension of concat
         # output -> (batch_size, output_len, dimensions)
         # output = self.linear_out(combined).view(batch_size, output_len, self.dimensions)
-        # output = self.linear_out(combined)
+        output = self.linear_out(combined)
 
-        output = self.tanh(combined)
-
+        output = self.tanh(output)
+        # output = combined
         return output, attention_weights
 
 class IntentClassifier(nn.Module):
@@ -120,45 +120,46 @@ class IntentClassifier(nn.Module):
         return self.linear(x)
 
 class SlotClassifier(nn.Module):
-    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, intent_embedding_size = 22, attention_embedding_size = 768, attention_type = 'general', dropout_rate=0.):
+    def __init__(self, input_dim, num_intent_labels, num_slot_labels, use_intent_context_concat = False, use_intent_context_attn = False, max_seq_len = 50, attention_embedding_size = 200, attention_type = 'general', dropout_rate=0.):
         super(SlotClassifier, self).__init__()
         self.use_intent_context_attn = use_intent_context_attn
         self.use_intent_context_concat = use_intent_context_concat
         self.max_seq_len = max_seq_len
         self.num_intent_labels = num_intent_labels
         self.num_slot_labels = num_slot_labels
-        self.intent_embedding_size = intent_embedding_size
         self.attention_embedding_size = attention_embedding_size
         self.attention_type = attention_type
         # print('attention_type', self.attention_type)
         
-        output_dim = input_dim #base model
+        output_dim = self.attention_embedding_size #base model
         if self.use_intent_context_concat:
-            output_dim = self.intent_embedding_size
+            output_dim = self.attention_embedding_size
+            self.linear_out = nn.Linear(2 * intent_embedding_size, intent_embedding_size)
+        
         elif self.use_intent_context_attn:
-            output_dim = self.attention_embedding_size*2
-            self.intent_embedding_size = self.attention_embedding_size
+            output_dim = self.attention_embedding_size
+            self.attention = Attention(attention_embedding_size, self.attention_type)        
+        
+        self.linear_slot = nn.Linear(input_dim, self.attention_embedding_size, bias=False)
 
-        self.softmax = nn.LogSoftmax(dim = -1) #softmax layer for intent logits
-        
-        self.attention = Attention(attention_embedding_size, self.attention_type)
-        
+        if self.use_intent_context_attn or self.use_intent_context_concat:
         #project intent vector and slot vector to have the same dimensions
-        self.linear_intent_context = nn.Linear(self.num_intent_labels, self.intent_embedding_size, bias = False)
-        self.linear_slot = nn.Linear(input_dim, self.intent_embedding_size, bias=False)
-        self.linear_out = nn.Linear(2 * intent_embedding_size, intent_embedding_size)
+            self.linear_intent_context = nn.Linear(self.num_intent_labels, self.attention_embedding_size, bias = False)
+            self.softmax = nn.Softmax(dim = -1) #softmax layer for intent logits
+        
+            # self.linear_out = nn.Linear(2 * intent_embedding_size, intent_embedding_size)
         #output
         self.dropout = nn.Dropout(dropout_rate)
         self.linear = nn.Linear(output_dim, num_slot_labels)
 
     def forward(self, x, intent_context, attention_mask):
+        x = self.linear_slot(x)
         if self.use_intent_context_concat:
             intent_context = self.softmax(intent_context)
             intent_context = self.linear_intent_context(intent_context)
             intent_context = torch.unsqueeze(intent_context, 1)
             intent_context = intent_context.expand(-1, self.max_seq_len, -1)
             # from IPython import embed; embed()
-            x = self.linear_slot(x)
             x = torch.cat((x, intent_context), dim = 2)
             x = self.linear_out(x)
             
@@ -169,5 +170,6 @@ class SlotClassifier(nn.Module):
             # intent_context = intent_context.expand(-1, self.max_seq_len, -1)
             output, weights = self.attention(x, intent_context, attention_mask)
             x = output
+            # x = torch.cat((x,mix), dim = 2)
         x = self.dropout(x)
         return self.linear(x)

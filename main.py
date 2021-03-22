@@ -21,10 +21,10 @@ def main(args):
 
     if args.do_eval:
         trainer.load_model()
-        trainer.evaluate("test")
+        trainer.evaluate("test",100)
     if args.do_eval_dev:
         trainer.load_model()
-        trainer.evaluate("dev")
+        trainer.evaluate("dev",100)
 
 
 if __name__ == '__main__':
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--model_type", default="bert", type=str, help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()))
     parser.add_argument("--tuning_metric", default="loss", type=str, help="Metrics to tune when training")
-    parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
+    parser.add_argument('--seed', type=int, default=1, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
     parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for evaluation.")
     parser.add_argument("--max_seq_len", default=50, type=int, help="The maximum total input sequence length after tokenization.")
@@ -71,18 +71,20 @@ if __name__ == '__main__':
     parser.add_argument('--gpu_id', type=int, default=0, help="Select gpu id")
     # CRF option
     parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
+    #init pretrained
+    parser.add_argument("--pretrained", action="store_true", help="Whether to init model from pretrained base model")
+    parser.add_argument("--pretrained_path", default="./viatis_xlmr_crf", type=str, help="The pretrained model path")
 
     #Slot-intent interaction
     parser.add_argument("--use_intent_context_concat", action="store_true", help="Whether to feed context information of intent into slots vectors (simple concatenation)")
     parser.add_argument("--use_intent_context_attention", action="store_true", help="Whether to feed context information of intent into slots vectors (dot product attention)")
-    parser.add_argument('--intent_embedding_size', type=int, default=22, help="hidden size of intent context weight vector")
-    parser.add_argument('--attention_embedding_size', type=int, default=768, help="hidden size of attention output vector")
+    parser.add_argument('--attention_embedding_size', type=int, default=200, help="hidden size of attention output vector")
 
     parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
     parser.add_argument("--attention_type", default="general", type=str, help="Attention type for intent context ('general' / 'dot')")
     parser.add_argument("--embedding_type", default="soft", type=str, help="Embedding type for intent vector (hard/soft)")
     parser.add_argument("--use_attention_mask", action="store_true", help="Whether to use attention mask")
-
+    
     args = parser.parse_args()
 
     args.model_name_or_path = MODEL_PATH_MAP[args.model_type]

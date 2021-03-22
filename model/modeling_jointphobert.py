@@ -16,7 +16,7 @@ class JointPhoBERT(RobertaPreTrainedModel):
 
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
 
-        self.slot_classifier = SlotClassifier(config.hidden_size, self.num_intent_labels, self.num_slot_labels, self.args.use_intent_context_concat, self.args.use_intent_context_attention, self.args.max_seq_len, self.args.intent_embedding_size, self.args.attention_embedding_size, self.args.attention_type, args.dropout_rate)
+        self.slot_classifier = SlotClassifier(config.hidden_size, self.num_intent_labels, self.num_slot_labels, self.args.use_intent_context_concat, self.args.use_intent_context_attention, self.args.max_seq_len, self.args.attention_embedding_size, self.args.attention_type, args.dropout_rate)
 
         if args.use_crf:
             self.crf = CRF(num_tags=self.num_slot_labels, batch_first=True)
@@ -38,7 +38,7 @@ class JointPhoBERT(RobertaPreTrainedModel):
             for i,sample in enumerate(intent_logits):
                 max_idx = torch.argmax(sample)
                 hard_intent_logits[i][max_idx] = 1
-            slot_logits = self.slot_classifier(sequence_output, hard_intent_logits, tmp_attention_mask)
+            slot_logits = self.slot_classifier(sequence_output, hard_intent_logits, tmp_attention_mask, epoch)
         else:
             slot_logits = self.slot_classifier(sequence_output, intent_logits, tmp_attention_mask)
 

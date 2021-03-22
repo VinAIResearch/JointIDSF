@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 
-from utils import MODEL_CLASSES, compute_metrics, get_intent_labels, get_slot_labels
+from utils import MODEL_CLASSES, MODEL_PATH_MAP, compute_metrics, get_intent_labels, get_slot_labels
 
 from early_stopping import EarlyStopping
 
@@ -27,15 +27,30 @@ class Trainer(object):
         self.slot_label_lst = get_slot_labels(args)
         # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
         self.pad_token_label_id = args.ignore_index
-
         self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
-        self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
-        self.model = self.model_class.from_pretrained(args.model_name_or_path,
+        # self.config = self.config_class.from_pretrained(model_path, finetuning_task=args.task)
+        
+        # if 'joint' in args.model_type:
+        #     # self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type[5:]]
+        #     model_path = MODEL_PATH_MAP[args.model_type[5:]]
+        #     self.config = self.config_class.from_pretrained(model_path, finetuning_task=args.task)
+        # else:
+        #     self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
+        #     self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
+        if args.pretrained:
+            print(args.model_name_or_path)
+            self.model = self.model_class.from_pretrained(args.pretrained_path,
+                                                      args=args,
+                                                      intent_label_lst=self.intent_label_lst,
+                                                      slot_label_lst=self.slot_label_lst)
+        else:
+            self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
+            self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
+            self.model = self.model_class.from_pretrained(args.model_name_or_path,
                                                       config=self.config,
                                                       args=args,
                                                       intent_label_lst=self.intent_label_lst,
                                                       slot_label_lst=self.slot_label_lst)
-
         # GPU or CPU
         torch.cuda.set_device(self.args.gpu_id)
         print(self.args.gpu_id)
@@ -52,7 +67,9 @@ class Trainer(object):
             self.args.num_train_epochs = self.args.max_steps // (len(train_dataloader) // self.args.gradient_accumulation_steps) + 1
         else:
             t_total = len(train_dataloader) // self.args.gradient_accumulation_steps * self.args.num_train_epochs
-
+        print('check init')
+        results = self.evaluate("dev")
+        print(results)
         # Prepare optimizer and schedule (linear warmup and decay)
         no_decay = ['bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
@@ -84,6 +101,7 @@ class Trainer(object):
         for _ in train_iterator:
             epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0, leave=True)
             print("\nEpoch", _)
+            
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)  # GPU or CPU
@@ -91,7 +109,8 @@ class Trainer(object):
                 inputs = {'input_ids': batch[0],
                           'attention_mask': batch[1],
                           'intent_label_ids': batch[3],
-                          'slot_labels_ids': batch[4]}
+                          'slot_labels_ids': batch[4]
+                          }
                 if self.args.model_type != 'distilbert':
                     inputs['token_type_ids'] = batch[2]
                 outputs = self.model(**inputs)
@@ -179,7 +198,8 @@ class Trainer(object):
                 inputs = {'input_ids': batch[0],
                           'attention_mask': batch[1],
                           'intent_label_ids': batch[3],
-                          'slot_labels_ids': batch[4]}
+                          'slot_labels_ids': batch[4]
+                          }
                 if self.args.model_type != 'distilbert':
                     inputs['token_type_ids'] = batch[2]
                 outputs = self.model(**inputs)
