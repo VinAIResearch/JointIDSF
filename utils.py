@@ -1,56 +1,64 @@
+import logging
 import os
 import random
-import logging
 
-import torch
 import numpy as np
-from seqeval.metrics import precision_score, recall_score, f1_score
+import torch
+from model import JointPhoBERT, JointXLMR
+from seqeval.metrics import f1_score, precision_score, recall_score
+from transformers import (
+    AlbertConfig,
+    AlbertTokenizer,
+    AutoTokenizer,
+    BertConfig,
+    BertTokenizer,
+    DistilBertConfig,
+    DistilBertTokenizer,
+    RobertaConfig,
+    RobertaTokenizer,
+    XLMRobertaConfig,
+    XLMRobertaTokenizer,
+)
 
-from transformers import BertConfig, DistilBertConfig, AlbertConfig, XLMRobertaConfig, RobertaConfig, AutoConfig
-from transformers import BertTokenizer, DistilBertTokenizer, AlbertTokenizer, XLMRobertaTokenizer, RobertaTokenizer, AutoTokenizer
-
-from model import JointBERT, JointDistilBERT, JointAlbert, JointXLMR, JointMBERT, JointRoberta, JointPhoBERT
 
 MODEL_CLASSES = {
-    'bert': (BertConfig, JointBERT, BertTokenizer),
-    'mbert': (BertConfig, JointMBERT, BertTokenizer),
-    'distilbert': (DistilBertConfig, JointDistilBERT, DistilBertTokenizer),
-    'albert': (AlbertConfig, JointAlbert, AlbertTokenizer),
-    'roberta': (RobertaConfig, JointRoberta, RobertaTokenizer),
-    'xlmr': (XLMRobertaConfig, JointXLMR, XLMRobertaTokenizer),
-    'phobert': (RobertaConfig, JointPhoBERT, AutoTokenizer)
+    "xlmr": (XLMRobertaConfig, JointXLMR, XLMRobertaTokenizer),
+    "phobert": (RobertaConfig, JointPhoBERT, AutoTokenizer),
 }
 
 MODEL_PATH_MAP = {
-    'bert': 'bert-base-uncased',
-    'mbert': 'bert-base-multilingual-uncased',
-    'distilbert': 'distilbert-base-uncased',
-    'albert': 'albert-xxlarge-v1',
-    'roberta': 'roberta-base',
-    'xlmr': 'xlm-roberta-base',
-    'phobert': 'vinai/phobert-base'
+    "xlmr": "xlm-roberta-base",
+    "phobert": "vinai/phobert-base",
 }
 
 
 def get_intent_labels(args):
-    return [label.strip() for label in open(os.path.join(args.data_dir, args.task, args.intent_label_file), 'r', encoding='utf-8')]
+    return [
+        label.strip()
+        for label in open(os.path.join(args.data_dir, args.task, args.intent_label_file), "r", encoding="utf-8")
+    ]
 
 
 def get_slot_labels(args):
-    return [label.strip() for label in open(os.path.join(args.data_dir, args.task, args.slot_label_file), 'r', encoding='utf-8')]
+    return [
+        label.strip()
+        for label in open(os.path.join(args.data_dir, args.task, args.slot_label_file), "r", encoding="utf-8")
+    ]
 
 
 def load_tokenizer(args):
-    if 'joint' in args.model_type:
+    if "joint" in args.model_type:
         model_type = args.model_type[5:]
         return MODEL_CLASSES[model_type][2].from_pretrained(MODEL_PATH_MAP[model_type])
     return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)
 
 
 def init_logger():
-    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                        datefmt='%m/%d/%Y %H:%M:%S',
-                        level=logging.INFO)
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+        level=logging.INFO,
+    )
 
 
 def set_seed(args):
@@ -68,12 +76,12 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     slot_result = get_slot_metrics(slot_preds, slot_labels)
     sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
 
-    mean_intent_slot = (intent_result['intent_acc'] + slot_result['slot_f1']) / 2
+    mean_intent_slot = (intent_result["intent_acc"] + slot_result["slot_f1"]) / 2
 
     results.update(intent_result)
     results.update(slot_result)
     results.update(sementic_result)
-    results['mean_intent_slot'] = mean_intent_slot
+    results["mean_intent_slot"] = mean_intent_slot
 
     return results
 
@@ -83,25 +91,23 @@ def get_slot_metrics(preds, labels):
     return {
         "slot_precision": precision_score(labels, preds),
         "slot_recall": recall_score(labels, preds),
-        "slot_f1": f1_score(labels, preds)
+        "slot_f1": f1_score(labels, preds),
     }
 
 
 def get_intent_acc(preds, labels):
     acc = (preds == labels).mean()
-    return {
-        "intent_acc": acc
-    }
+    return {"intent_acc": acc}
 
 
 def read_prediction_text(args):
-    return [text.strip() for text in open(os.path.join(args.pred_dir, args.pred_input_file), 'r', encoding='utf-8')]
+    return [text.strip() for text in open(os.path.join(args.pred_dir, args.pred_input_file), "r", encoding="utf-8")]
 
 
 def get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels):
     """For the cases that intent and all the slots are correct (in one sentence)"""
     # Get the intent comparison result
-    intent_result = (intent_preds == intent_labels)
+    intent_result = intent_preds == intent_labels
 
     # Get the slot comparision result
     slot_result = []
@@ -116,6 +122,4 @@ def get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
     slot_result = np.array(slot_result)
 
     semantic_acc = np.multiply(intent_result, slot_result).mean()
-    return {
-        "semantic_frame_acc": semantic_acc
-    }
+    return {"semantic_frame_acc": semantic_acc}

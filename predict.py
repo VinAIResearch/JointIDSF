@@ -1,13 +1,13 @@
-import os
-import logging
 import argparse
-from tqdm import tqdm, trange
+import logging
+import os
 
 import numpy as np
 import torch
-from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
+from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
+from tqdm import tqdm
+from utils import MODEL_CLASSES, get_intent_labels, get_slot_labels, init_logger, load_tokenizer
 
-from utils import init_logger, load_tokenizer, get_intent_labels, get_slot_labels, MODEL_CLASSES
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def get_device(pred_config):
 
 
 def get_args(pred_config):
-    return torch.load(os.path.join(pred_config.model_dir, 'training_args.bin'))
+    return torch.load(os.path.join(pred_config.model_dir, "training_args.bin"))
 
 
 def load_model(pred_config, args, device):
@@ -26,14 +26,13 @@ def load_model(pred_config, args, device):
         raise Exception("Model doesn't exists! Train first!")
 
     try:
-        model = MODEL_CLASSES[args.model_type][1].from_pretrained(args.model_dir,
-                                                                  args=args,
-                                                                  intent_label_lst=get_intent_labels(args),
-                                                                  slot_label_lst=get_slot_labels(args))
+        model = MODEL_CLASSES[args.model_type][1].from_pretrained(
+            args.model_dir, args=args, intent_label_lst=get_intent_labels(args), slot_label_lst=get_slot_labels(args)
+        )
         model.to(device)
         model.eval()
         logger.info("***** Model Loaded *****")
-    except:
+    except Exception:
         raise Exception("Some model files might be missing...")
 
     return model
@@ -50,15 +49,17 @@ def read_input_file(pred_config):
     return lines
 
 
-def convert_input_file_to_tensor_dataset(lines,
-                                         pred_config,
-                                         args,
-                                         tokenizer,
-                                         pad_token_label_id,
-                                         cls_token_segment_id=0,
-                                         pad_token_segment_id=0,
-                                         sequence_a_segment_id=0,
-                                         mask_padding_with_zero=True):
+def convert_input_file_to_tensor_dataset(
+    lines,
+    pred_config,
+    args,
+    tokenizer,
+    pad_token_label_id,
+    cls_token_segment_id=0,
+    pad_token_segment_id=0,
+    sequence_a_segment_id=0,
+    mask_padding_with_zero=True,
+):
     # Setting based on the current model type
     cls_token = tokenizer.cls_token
     sep_token = tokenizer.sep_token
@@ -85,7 +86,7 @@ def convert_input_file_to_tensor_dataset(lines,
         special_tokens_count = 2
         if len(tokens) > args.max_seq_len - special_tokens_count:
             tokens = tokens[: (args.max_seq_len - special_tokens_count)]
-            slot_label_mask = slot_label_mask[:(args.max_seq_len - special_tokens_count)]
+            slot_label_mask = slot_label_mask[: (args.max_seq_len - special_tokens_count)]
 
         # Add [SEP] token
         tokens += [sep_token]
@@ -152,10 +153,12 @@ def predict(pred_config):
     for batch in tqdm(data_loader, desc="Predicting"):
         batch = tuple(t.to(device) for t in batch)
         with torch.no_grad():
-            inputs = {"input_ids": batch[0],
-                      "attention_mask": batch[1],
-                      "intent_label_ids": None,
-                      "slot_labels_ids": None}
+            inputs = {
+                "input_ids": batch[0],
+                "attention_mask": batch[1],
+                "intent_label_ids": None,
+                "slot_labels_ids": None,
+            }
             if args.model_type != "distilbert":
                 inputs["token_type_ids"] = batch[2]
             outputs = model(**inputs)
@@ -200,7 +203,7 @@ def predict(pred_config):
         for words, slot_preds, intent_pred in zip(lines, slot_preds_list, intent_preds):
             line = ""
             for word, pred in zip(words, slot_preds):
-                if pred == 'O':
+                if pred == "O":
                     line = line + word + " "
                 else:
                     line = line + "[{}:{}] ".format(word, pred)

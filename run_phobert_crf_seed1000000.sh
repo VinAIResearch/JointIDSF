@@ -9,9 +9,9 @@
 # do
 export lr=3e-5
 export c=0.6
-export s=1
+export s=1000000
 echo "${lr}"
-export MODEL_DIR=viatis_phobert_crf_test
+export MODEL_DIR=viatis_phobert_crf_sm
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
 /usr/bin/python3.7 main.py --task vi-atis-fix \
@@ -28,7 +28,7 @@ echo "${MODEL_DIR}"
                   --tuning_metric mean_intent_slot \
                   --use_crf \
                   --token_level word \
-                  --gpu_id 0 \
+                  --gpu_id 1 \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --early_stopping 50 \

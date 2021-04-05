@@ -7,11 +7,11 @@
 # do
 # for c in "${coef_list[@]}"
 # do
-export lr=3e-5
-export c=0.6
-export s=1
+export lr=4e-5
+export c=0.15
+export s=10
 echo "${lr}"
-export MODEL_DIR=viatis_phobert_crf_test
+export MODEL_DIR=viatis_phobert_crf_attn
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
 /usr/bin/python3.7 main.py --task vi-atis-fix \
@@ -26,10 +26,14 @@ echo "${MODEL_DIR}"
                   --logging_steps 140 \
                   --num_train_epochs 50 \
                   --tuning_metric mean_intent_slot \
+                  --use_intent_context_attention \
+                  --attention_embedding_size 200 \
                   --use_crf \
                   --token_level word \
-                  --gpu_id 0 \
+                  --gpu_id 1 \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --early_stopping 50 \
+                  --pretrained \
+                  --pretrained_path viatis_phobert_crf_sm/3e-5/0.6/10 \
                   --learning_rate $lr
