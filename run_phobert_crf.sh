@@ -5,7 +5,7 @@ echo "${lr}"
 export MODEL_DIR=viatis_phobert_crf_test
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-/usr/bin/python3.7 main.py --task vi-atis-fix \
+/usr/bin/python3.7 main.py --task viatis \
                   --model_type phobert \
                   --model_dir $MODEL_DIR \
                   --data_dir data \

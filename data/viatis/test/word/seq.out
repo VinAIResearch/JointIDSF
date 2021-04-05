@@ -581,7 +581,7 @@ O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-round_trip B-depar
 O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time B-flight_days I-flight_days
 B-airline_code O O O O
 O O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
-O O O O O O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name B-toloc.city_name
+O O O O O O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
 B-airline_code O O O O
 O O O O O O O O O O B-city_name
 O O O O O O O B-fromloc.city_name O B-toloc.city_name
@@ -608,7 +608,7 @@ O O O O O O B-round_trip B-flight_mod I-flight_mod O B-fromloc.city_name O B-tol
 O O O O O O B-flight_mod I-flight_mod O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-round_trip
 B-airline_code O O O O
 O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
-O O O O O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name B-toloc.city_name
+O O O O O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
 O O O O O O O B-fromloc.city_name O B-toloc.city_name
 O O O O O B-fromloc.city_name O B-toloc.city_name
 O O O O O B-fromloc.city_name O B-toloc.city_name

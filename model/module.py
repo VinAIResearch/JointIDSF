@@ -24,11 +24,10 @@ class Attention(nn.Module):
          torch.Size([32, 50, 1])
     """
 
-    def __init__(self, dimensions, attention_type="general"):
+    def __init__(self, dimensions):
         super(Attention, self).__init__()
 
         self.dimensions = dimensions
-        self.attention_type = attention_type
         self.linear_out = nn.Linear(dimensions * 2, dimensions, bias=False)
         self.softmax = nn.Softmax(dim=1)
         self.tanh = nn.Tanh()
@@ -124,7 +123,7 @@ class SlotClassifier(nn.Module):
 
         elif self.use_intent_context_attn:
             output_dim = self.attention_embedding_size
-            self.attention = Attention(attention_embedding_size, self.attention_type)
+            self.attention = Attention(attention_embedding_size)
 
         self.linear_slot = nn.Linear(input_dim, self.attention_embedding_size, bias=False)
 
