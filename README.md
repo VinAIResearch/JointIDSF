@@ -15,9 +15,11 @@ Details of our dataset construction, JointIDSF model architecture, and experimen
 
 ## Installation
 - Python version >= 3.6; PyTorch version >= 1.4.0
-
+```
     git clone https://github.com/VinAIResearch/JointIDSF.git
     cd JointIDSF/
     pip install -r requirements.txt
+```
+
 
 ## Training & Evaluation
