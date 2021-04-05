@@ -1,20 +1,24 @@
-lr_list=(5e-5)
-for lr in "${lr_list[@]}" 
-do
+export lr=4e-5
+export c=0.45
+export s=1
 echo "${lr}"
-export MODEL_DIR=atis_xlmr_crf
-export MODEL_DIR=$MODEL_DIR"/"$lr
+export MODEL_DIR=viatis_xlmr_crf
+export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-/usr/bin/python3.7 main.py --task atis \
+/usr/bin/python3.7 main.py --task vi-atis-fix \
                   --model_type xlmr \
                   --model_dir $MODEL_DIR \
                   --data_dir data \
+                  --seed $s \
                   --do_train \
                   --do_eval \
+                  --do_eval_dev \
                   --save_steps 140 \
                   --logging_steps 140 \
-                  --num_train_epochs 1000 \
+                  --num_train_epochs 50 \
                   --tuning_metric mean_intent_slot \
-		  --use_crf \
+                  --use_crf \
+                  --gpu_id 0 \
+                  --embedding_type soft \
+                  --intent_loss_coef $c \
                   --learning_rate $lr
-done

@@ -47,9 +47,6 @@ def get_slot_labels(args):
 
 
 def load_tokenizer(args):
-    if "joint" in args.model_type:
-        model_type = args.model_type[5:]
-        return MODEL_CLASSES[model_type][2].from_pretrained(MODEL_PATH_MAP[model_type])
     return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)
 
 
