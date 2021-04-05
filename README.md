@@ -1,24 +1,22 @@
-# JointIDSF: English - Vietnamese Joint Intent Detection - Slot Filling
-
-Based on the code from https://github.com/monologg/JointBERT
-
-## Model implemented:
-- JointBERT, JointDistilBERT, JointAlBERT
-- JointMBERT JointRoBERTa, JointXLM-R, JointPhoBERT
-
-## Added Early Stopping
-
-## Tuning metrics to choose:
-- Validation loss
-- Intent accuracy
-- Slot F-1 (Main metrics)
-- Semantic Frame Accuracy (Both intent and slots need to be correct)
+# Intent detection and slot filling for Vietnamese
 
 
-## Run
 
-```
-sh run_{model_type}.sh
-model_type: bert, mbert, roberta, xlmr, phobert (only works for Vietnamese)
-```
+Details of our dataset construction, JointIDSF model architecture, and experimental results can be found in our [following paper]():
+    @article{jointidsf,
+    title     = {{Intent detection and slot filling for Vietnamese}},
+    author    = {Mai Hoang Dao, Thinh Hung Truong, Dat Quoc Nguyen},
+    booktitle = {},
+    year      = {2021}
+    }
 
+
+
+
+**Please CITE** our paper whenever our dataset or model implementation is used to help produce published results or incorporated into other software.
+
+
+## Installation
+
+
+## Training & Evaluation
