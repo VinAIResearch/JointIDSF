@@ -55,3 +55,23 @@ python3 main.py --task word-level \
                   --intent_loss_coef 0.6 \
                   --learning_rate 3e-5
 ```
+
+## Dataset
+Our dataset, which is first public dataset for Vietnamese intent detection and slot filling is under the `<data>` directory. In particular, we provide two versions coresponding to the syllable-level and word-level dataset.
+
+By downloading our dataset, USER agrees:
+
+- to use the dataset for research or educational purposes only.
+- to **not** distribute the dataset or part of the dataset in any original or modified form.
+- and to cite our paper above whenever the dataset is employed to help produce published results.
+
+#### Copyright (c) 2021 VinAI Research
+
+	THE DATA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE DATA OR THE USE OR OTHER DEALINGS IN THE
+	DATA.
+
