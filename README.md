@@ -22,6 +22,11 @@ Details of our dataset construction, JointIDSF model architecture, and experimen
 ## Dataset
 Our dataset, which is first public dataset for Vietnamese intent detection and slot filling is under the `data/` directory. In particular, we provide two versions coresponding to the syllable-level and word-level dataset.
 
+<p align="center">	
+<img width="600" alt="statistic" src="table_statistic.png">
+</p>
+
+
 By downloading our dataset, USER agrees:
 
 - to use the dataset for research or educational purposes only.
