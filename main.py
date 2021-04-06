@@ -30,7 +30,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--task", default=None, required=True, type=str, help="The name of the task to train")
+    # parser.add_argument("--task", default=None, required=True, type=str, help="The name of the task to train")
     parser.add_argument("--model_dir", default=None, required=True, type=str, help="Path to save, load model")
     parser.add_argument("--data_dir", default="./data", type=str, help="The input data dir")
     parser.add_argument("--intent_label_file", default="intent_label.txt", type=str, help="Intent Label file")
@@ -89,7 +89,10 @@ if __name__ == "__main__":
 
     parser.add_argument("--intent_loss_coef", type=float, default=0.5, help="Coefficient for the intent loss.")
     parser.add_argument(
-        "--token_level", type=str, default="syllable", help="Tokens are at syllable level or word level (Vietnamese)"
+        "--token_level",
+        type=str,
+        default="word-level",
+        help="Tokens are at syllable level or word level (Vietnamese) [word-level, syllable-level]",
     )
     parser.add_argument(
         "--early_stopping",

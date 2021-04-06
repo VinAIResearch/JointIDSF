@@ -106,7 +106,7 @@ class SlotClassifier(nn.Module):
         use_intent_context_attn=False,
         max_seq_len=50,
         attention_embedding_size=200,
-        dropout_rate=0.0
+        dropout_rate=0.0,
     ):
         super(SlotClassifier, self).__init__()
         self.use_intent_context_attn = use_intent_context_attn

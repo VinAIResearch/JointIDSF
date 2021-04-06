@@ -37,7 +37,7 @@ class Trainer(object):
                 slot_label_lst=self.slot_label_lst,
             )
         else:
-            self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
+            self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.token_level)
             self.model = self.model_class.from_pretrained(
                 args.model_name_or_path,
                 config=self.config,

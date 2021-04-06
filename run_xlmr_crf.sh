@@ -5,7 +5,7 @@ echo "${lr}"
 export MODEL_DIR=viatis_xlmr_crf
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-/usr/bin/python3.7 main.py --task syllable-level \
+python3 main.py --token_level syllable-level \
                   --model_type xlmr \
                   --model_dir $MODEL_DIR \
                   --data_dir data \

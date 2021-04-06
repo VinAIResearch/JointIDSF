@@ -2,10 +2,10 @@ export lr=4e-5
 export c=0.15
 export s=1
 echo "${lr}"
-export MODEL_DIR=viatis_phobert_crf_attn_test
+export MODEL_DIR=viatis_phobert_crf_attn
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-/usr/bin/python3.7 main.py --task word-level \
+python3 main.py --token_level word-level \
                   --model_type phobert \
                   --model_dir $MODEL_DIR \
                   --data_dir data \
@@ -19,7 +19,6 @@ echo "${MODEL_DIR}"
                   --use_intent_context_attention \
                   --attention_embedding_size 200 \
                   --use_crf \
-                  --token_level word \
                   --gpu_id 0 \
                   --embedding_type soft \
                   --intent_loss_coef $c \

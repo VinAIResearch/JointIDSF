@@ -7,15 +7,8 @@ import torch
 from model import JointPhoBERT, JointXLMR
 from seqeval.metrics import f1_score, precision_score, recall_score
 from transformers import (
-    AlbertConfig,
-    AlbertTokenizer,
     AutoTokenizer,
-    BertConfig,
-    BertTokenizer,
-    DistilBertConfig,
-    DistilBertTokenizer,
     RobertaConfig,
-    RobertaTokenizer,
     XLMRobertaConfig,
     XLMRobertaTokenizer,
 )
@@ -35,14 +28,14 @@ MODEL_PATH_MAP = {
 def get_intent_labels(args):
     return [
         label.strip()
-        for label in open(os.path.join(args.data_dir, args.task, args.intent_label_file), "r", encoding="utf-8")
+        for label in open(os.path.join(args.data_dir, args.token_level, args.intent_label_file), "r", encoding="utf-8")
     ]
 
 
 def get_slot_labels(args):
     return [
         label.strip()
-        for label in open(os.path.join(args.data_dir, args.task, args.slot_label_file), "r", encoding="utf-8")
+        for label in open(os.path.join(args.data_dir, args.token_level, args.slot_label_file), "r", encoding="utf-8")
     ]
 
 
