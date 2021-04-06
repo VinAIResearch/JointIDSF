@@ -36,7 +36,7 @@ python3 main.py --task word-level \
                   --model_type phobert \
                   --model_dir ./phobert_crf/ \
                   --data_dir data \
-                  --seed $s \
+                  --seed 1 \
                   --do_train \
                   --do_eval \
                   --save_steps 140 \
@@ -46,6 +46,6 @@ python3 main.py --task word-level \
                   --use_crf \
                   --token_level word \
                   --embedding_type soft \
-                  --intent_loss_coef 0.3 \
+                  --intent_loss_coef 0.6 \
                   --learning_rate 3e-5
 ```
