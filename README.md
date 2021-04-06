@@ -57,7 +57,7 @@ python3 main.py --task word-level \
 ```
 
 ## Dataset
-Our dataset, which is first public dataset for Vietnamese intent detection and slot filling is under the `<data>` directory. In particular, we provide two versions coresponding to the syllable-level and word-level dataset.
+Our dataset, which is first public dataset for Vietnamese intent detection and slot filling is under the `data/` directory. In particular, we provide two versions coresponding to the syllable-level and word-level dataset.
 
 By downloading our dataset, USER agrees:
 
