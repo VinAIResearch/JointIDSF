@@ -5,7 +5,7 @@ echo "${lr}"
 export MODEL_DIR=viatis_phobert_crf_attn
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-python3 main.py --token_level word-level \
+/usr/bin/python3.7 main.py --token_level word-level \
                   --model_type phobert \
                   --model_dir $MODEL_DIR \
                   --data_dir data \
@@ -23,5 +23,5 @@ python3 main.py --token_level word-level \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --pretrained \
-                  --pretrained_path viatis_phobert_crf_test/3e-5/0.6/1 \
+                  --pretrained_path viatis_phobert_crf/3e-5/0.6/1 \
                   --learning_rate $lr
