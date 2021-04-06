@@ -1,5 +1,10 @@
 # Intent detection and slot filling for Vietnamese
 
+In this paper, we have presented the first public dataset for Vietnamese intent detection and slot filling. In addition, we also have proposed an effective model, namely JointIDSF, for jointly learning intent detection and slot filling. In particular, JointIDSF extends the recent state-of-the-art [JointBERT+CRF](https://arxiv.org/abs/1902.10909) by introducing the intent-slot attention layer to incorporate intent context information into slot filling explicitly. We empirically conduct experiments and perform a detailed error analysis on our dataset, and show that: JointIDSF significantly outperforms JointBERT+CRF and our attention mechanism is more effective than the previous ones.
+
+<p align="center">	
+<img width="600" alt="model" src="JointModel.jpg">
+</p>
 
 
 Details of our dataset construction, JointIDSF model architecture, and experimental results can be found in our [following paper](https://arxiv.org/abs/2104.02021):
@@ -7,8 +12,9 @@ Details of our dataset construction, JointIDSF model architecture, and experimen
     @article{jointidsf,
     title     = {{Intent detection and slot filling for Vietnamese}},
     author    = {Mai Hoang Dao, Thinh Hung Truong, Dat Quoc Nguyen},
-    booktitle = {},
+    journal   = {arXiv preprint},
     year      = {2021}
+    volume    = {arXiv:2104.02021}
     }
 
 **Please CITE** our paper whenever our dataset or model implementation is used to help produce published results or incorporated into other software.
