@@ -5,7 +5,7 @@ echo "${lr}"
 export MODEL_DIR=viatis_phobert_crf_test
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-/usr/bin/python3.7 main.py --task viatis \
+/usr/bin/python3.7 main.py --task word-level \
                   --model_type phobert \
                   --model_dir $MODEL_DIR \
                   --data_dir data \

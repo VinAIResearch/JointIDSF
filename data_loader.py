@@ -112,10 +112,7 @@ class JointProcessor(object):
         Args:
             mode: train, dev, test
         """
-        if self.args.task == "viatis":
-            data_path = os.path.join(self.args.data_dir, self.args.task, mode, self.args.token_level)
-        else:
-            data_path = os.path.join(self.args.data_dir, self.args.task, mode)
+        data_path = os.path.join(self.args.data_dir, self.args.task, mode)
         logger.info("LOOKING AT {}".format(data_path))
         return self._create_examples(
             texts=self._read_file(os.path.join(data_path, self.input_text_file)),
@@ -126,7 +123,8 @@ class JointProcessor(object):
 
 
 processors = {
-    "viatis": JointProcessor
+    "syllable-level": JointProcessor,
+    "word-level": JointProcessor
 }
 
 
