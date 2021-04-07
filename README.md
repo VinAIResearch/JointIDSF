@@ -5,7 +5,7 @@
 - Experimental results on our Vietnamese dataset show that our proposed model significantly outperforms [JointBERT+CRF](https://arxiv.org/abs/1902.10909).
 
 <p align="center">	
-<img width="600" alt="model" src="JointModel.pdf">
+<img width="600" alt="model" src="JointModel.png">
 </p>
 
 
