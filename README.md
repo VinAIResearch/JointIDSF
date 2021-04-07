@@ -60,7 +60,7 @@ Example usage:
 ```
 python3 main.py --task word-level \
                   --model_type phobert \
-                  --model_dir ./phobert_crf/ \
+                  --model_dir ./JointBERT_PhoBERTencoder/ \
                   --data_dir data \
                   --seed 1 \
                   --do_train \
