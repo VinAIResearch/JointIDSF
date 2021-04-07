@@ -2,6 +2,7 @@ torch==1.6.0
 transformers==4.1.1
 seqeval==0.0.12
 pytorch-crf==0.7.2
+tensorflow==2.2.0
 sentencepiece
 tensorboard
 numpy

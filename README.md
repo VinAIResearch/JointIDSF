@@ -81,3 +81,13 @@ python3 main.py --task word-level \
                   --intent_loss_coef 0.6 \
                   --learning_rate 3e-5
 ```
+## Inference
+To tag a raw text file:
+```
+python3 predict.py  --input_file <input_file_name> \
+                    --output_file <output_file_name> \
+                    --model_dir <path_to_trained_model>
+```
+
+## Use your own dataset
+- Our model can also be applied to other dataset. Please prepare your data with the same format as in the ```data/``` directory

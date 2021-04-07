@@ -1,5 +1,5 @@
-export lr=3e-5
-export c=0.6
+export lr=4e-5
+export c=0.15
 export s=1
 echo "${lr}"
 export MODEL_DIR=viatis_phobert_crf
