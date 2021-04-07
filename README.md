@@ -1,9 +1,11 @@
 # Intent detection and slot filling for Vietnamese
 
-In this paper, we have presented the first public dataset for Vietnamese intent detection and slot filling. In addition, we also have proposed an effective model, namely JointIDSF, for jointly learning intent detection and slot filling. In particular, JointIDSF extends the recent state-of-the-art [JointBERT+CRF](https://arxiv.org/abs/1902.10909) by introducing the intent-slot attention layer to incorporate intent context information into slot filling explicitly. We empirically conduct experiments and perform a detailed error analysis on our dataset, and show that: JointIDSF significantly outperforms JointBERT+CRF and our attention mechanism is more effective than the previous ones.
+- In this paper, we present the first public intent detection and slot filling dataset for Vietnamese. 
+- In addition, we also propose a joint model for intent detection and slot filling, that extends the recent state-of-the-art JointBERT+CRF model with an intent-slot attention layer in order to explicitly incorporate intent context information into slot filling via "soft" intent label embedding. 
+- Experimental results on our Vietnamese dataset show that our proposed model significantly outperforms [JointBERT+CRF](https://arxiv.org/abs/1902.10909).
 
 <p align="center">	
-<img width="600" alt="model" src="JointModel.jpg">
+<img width="600" alt="model" src="JointModel.PDF">
 </p>
 
 
@@ -34,18 +36,6 @@ By downloading our dataset, USER agrees:
 - to use the dataset for research or educational purposes only.
 - to **not** distribute the dataset or part of the dataset in any original or modified form.
 - and to cite our paper above whenever the dataset is employed to help produce published results.
-
-#### Copyright (c) 2021 VinAI Research
-
-	THE DATA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE DATA OR THE USE OR OTHER DEALINGS IN THE
-	DATA.
-
-
 
 ## Installation
 - Python version >= 3.6; PyTorch version >= 1.4.0
@@ -93,3 +83,14 @@ python3 predict.py  --input_file <input_file_name> \
 
 ## Use your own dataset
 - Our model can also be applied to other dataset. Please prepare your data with the same format as in the ```data/``` directory
+
+#### Copyright (c) 2021 VinAI Research
+
+	THE DATA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE DATA OR THE USE OR OTHER DEALINGS IN THE
+	DATA.
+
