@@ -1,8 +1,8 @@
-export lr=4e-5
-export c=0.15
+export lr=3e-5
+export c=0.6
 export s=1
 echo "${lr}"
-export MODEL_DIR=viatis_phobert_crf
+export MODEL_DIR=JointBERT_PhoBERTencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
 /usr/bin/python3.7 main.py --token_level word-level \

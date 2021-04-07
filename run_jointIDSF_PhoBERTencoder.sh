@@ -2,7 +2,7 @@ export lr=4e-5
 export c=0.15
 export s=1
 echo "${lr}"
-export MODEL_DIR=viatis_phobert_crf_attn
+export MODEL_DIR=JointIDSF_PhoBERTencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
 /usr/bin/python3.7 main.py --token_level word-level \
@@ -23,5 +23,5 @@ echo "${MODEL_DIR}"
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --pretrained \
-                  --pretrained_path viatis_phobert_crf/3e-5/0.6/1 \
+                  --pretrained_path JointBERT_PhoBERTencoder/3e-5/0.6/1 \
                   --learning_rate $lr
