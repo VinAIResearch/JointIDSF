@@ -22,7 +22,7 @@ Details of our dataset construction, JointIDSF model architecture, and experimen
 ## Dataset
 - Our dataset, which is first public dataset for Vietnamese intent detection and slot filling is under the `data/` directory. 
 - In particular, we provide two versions coresponding to the syllable-level and word-level dataset.
-- Our dataset can be seen as a Vietnamese version of the widely-used dataset ATIS dataset. In addition to translation, we also make modification where possible to ensure that the Vietnamese utterances are natural, fitting in real-world scenarios of flight booking in Vietnam, and of high-quality.
+- Our dataset can be seen as a Vietnamese version of the widely-used ATIS dataset. In addition to translation, we also make modification where possible to ensure that the Vietnamese utterances are natural, fitting in real-world scenarios of flight booking in Vietnam, and of high-quality.
 
 <p align="center">	
 <img width="600" alt="statistic" src="table_statistic.png">
