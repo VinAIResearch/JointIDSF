@@ -47,13 +47,15 @@ By downloading our dataset, USER agrees:
 
 
 ## Training and Evaluation
-To reproduce the results in the paper please run
+To reproduce the results in the paper please run (in the following order)
 ```
-    run_phobert_crf.sh
-    run_phobert_crf_attn.sh
-    run_xlmr_crf.sh
-    run_xlmr_crf_attn.sh
+    ./run_jointBERT_PhoBERTencoder.sh
+    ./run_jointIDSF_PhoBERTencoder.sh
+    ./run_jointBERT_XLM-Rencoder.sh
+    ./run_jointIDSF_XLM-Rencoder.sh
 ```
+Note that we initialize JointIDSF from JointBERT so in order to execute the command ```./run_jointIDSF_PhoBERTencoder.sh``` (or ```./run_jointIDSF_XLM-Rencoder.sh```), user need to run ```./run_jointBERT_PhoBERTencoder.sh```(or ```./run_jointBERT_XLM-Rencoder.sh```) first.
+
 Example usage:
 ```
 python3 main.py --task word-level \
