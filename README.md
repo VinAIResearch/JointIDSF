@@ -1,8 +1,8 @@
 # Intent detection and slot filling for Vietnamese
 
-- In this paper, we present the first public intent detection and slot filling dataset for Vietnamese. 
-- In addition, we also propose a joint model for intent detection and slot filling, that extends the recent state-of-the-art JointBERT+CRF model with an intent-slot attention layer in order to explicitly incorporate intent context information into slot filling via "soft" intent label embedding. 
-- Experimental results on our Vietnamese dataset show that our proposed model significantly outperforms [JointBERT+CRF](https://arxiv.org/abs/1902.10909).
+- We present the first public intent detection and slot filling dataset for Vietnamese. 
+- In addition, we also propose a joint model for intent detection and slot filling, that extends the recent state-of-the-art [JointBERT+CRF](https://arxiv.org/abs/1902.10909) model with an intent-slot attention layer in order to explicitly incorporate intent context information into slot filling via "soft" intent label embedding. 
+- Experimental results on our Vietnamese dataset show that our proposed model significantly outperforms JointBERT+CRF.
 
 <p align="center">	
 <img width="600" alt="model" src="JointModel.png">
@@ -22,9 +22,6 @@ Details of our dataset construction, JointIDSF model architecture, and experimen
 **Please CITE** our paper whenever our dataset or model implementation is used to help produce published results or incorporated into other software.
 
 ## Dataset
-- Our dataset, which is the first public dataset for Vietnamese intent detection and slot filling is provided under the `data/` directory. 
-- In particular, we provide two versions coresponding to the syllable-level and word-level dataset.
-- Our dataset can be seen as a Vietnamese version of the widely-used ATIS dataset. In addition to translation, we also make modification where possible to ensure that the Vietnamese utterances are natural, fitting in real-world scenarios of flight booking in Vietnam, and of high-quality.
 
 <p align="center">	
 <img width="600" alt="statistic" src="table_statistic.png">
@@ -47,15 +44,12 @@ By downloading our dataset, USER agrees:
 
 
 ## Training and Evaluation
-To reproduce the results in the paper please run (in the following order)
+To reproduce the results in the paper, please run
 ```
-    ./run_jointBERT_PhoBERTencoder.sh
-    ./run_jointIDSF_PhoBERTencoder.sh
     ./run_jointBERT_XLM-Rencoder.sh
     ./run_jointIDSF_XLM-Rencoder.sh
 ```
-Note that we initialize JointIDSF from JointBERT so in order to execute the command ```./run_jointIDSF_PhoBERTencoder.sh``` (or ```./run_jointIDSF_XLM-Rencoder.sh```), user need to run ```./run_jointBERT_PhoBERTencoder.sh```(or ```./run_jointBERT_XLM-Rencoder.sh```) first.
-
+Note that we initialize JointIDSF from JointBERT so in the run scripts, we also include the command to train a base JointBERT model. 
 Example usage:
 ```
 python3 main.py --task word-level \
@@ -75,18 +69,20 @@ python3 main.py --task word-level \
                   --intent_loss_coef 0.6 \
                   --learning_rate 3e-5
 ```
+- Our model can also be applied to other dataset. Please prepare your data with the same format as in the ```data/``` directory
+
 ## Inference
-To tag a raw text file:
+To tag a new text file:
 ```
 python3 predict.py  --input_file <input_file_name> \
                     --output_file <output_file_name> \
                     --model_dir <path_to_trained_model>
 ```
+where input file is a raw text file (one utterance per line)
+## Acknowledgement
+Our code is based on the unofficial implementation of the JointBERT paper from https://github.com/monologg/JointBERT 
 
-## Use your own dataset
-- Our model can also be applied to other dataset. Please prepare your data with the same format as in the ```data/``` directory
-
-#### Copyright (c) 2021 VinAI Research
+## Copyright (c) 2021 VinAI Research
 
 	THE DATA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

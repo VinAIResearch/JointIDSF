@@ -1,3 +1,6 @@
+#As we initialize JointIDSF from JointBERT, user need to train a base model JointBERT first
+./run_jointBERT_XLM-Rencoder.sh
+#Train JointIDSF
 export lr=3e-5
 export c=0.25
 export s=1
