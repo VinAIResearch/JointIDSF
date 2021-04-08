@@ -68,7 +68,7 @@ python3 main.py --token_level word-level \
                   --intent_loss_coef 0.6 \
                   --learning_rate 3e-5
 ```
-- Our model can also be applied to other dataset. Please prepare your data with the same format as in the ```data/``` directory
+- Our model can also be applied to other datasets. Please prepare your data with the same format as in the ```data/``` directory.
 
 ## Inference
 To tag a new text file:
@@ -77,7 +77,7 @@ python3 predict.py  --input_file <input_file_name> \
                     --output_file <output_file_name> \
                     --model_dir <path_to_trained_model>
 ```
-where input file is a raw text file (one utterance per line)
+where the input file is a raw text file (one utterance per line).
 
 ## Acknowledgement
 Our code is based on the unofficial implementation of the JointBERT paper from https://github.com/monologg/JointBERT 

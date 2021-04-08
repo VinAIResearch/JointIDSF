@@ -3,7 +3,7 @@
 #Train JointIDSF
 export lr=4e-5
 export c=0.15
-export s=1
+export s=100
 echo "${lr}"
 export MODEL_DIR=JointIDSF_PhoBERTencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
@@ -26,5 +26,5 @@ python3 main.py --token_level word-level \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --pretrained \
-                  --pretrained_path JointBERT_PhoBERTencoder/3e-5/0.6/1 \
+                  --pretrained_path JointBERT_PhoBERTencoder/3e-5/0.6/100 \
                   --learning_rate $lr
