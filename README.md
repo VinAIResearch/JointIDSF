@@ -49,6 +49,7 @@ To reproduce the results in the paper, please run
     ./run_jointIDSF_XLM-Rencoder.sh
 ```
 Note that as we initialize JointIDSF from JointBERT, so in the run scripts, we also include the command to train a base JointBERT model. 
+
 Example usage:
 ```
 python3 main.py --token_level word-level \
