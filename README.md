@@ -28,11 +28,10 @@ Details of our dataset construction, JointIDSF model architecture, and experimen
 </p>
 
 
-By downloading our dataset, USER agrees:
-
-- to use the dataset for research or educational purposes only.
-- to **not** distribute the dataset or part of the dataset in any original or modified form.
-- and to cite our paper above whenever the dataset is employed to help produce published results.
+> By downloading our dataset, USER agrees:
+> - to use the dataset for research or educational purposes only.
+> - to **not** distribute the dataset or part of the dataset in any original or modified form.
+> - and to cite our paper above whenever the dataset is employed to help produce published results.
 
 ## Installation
 - Python version >= 3.6; PyTorch version >= 1.4.0
