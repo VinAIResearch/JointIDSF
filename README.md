@@ -39,20 +39,19 @@ By downloading our dataset, USER agrees:
 ```
     git clone https://github.com/VinAIResearch/JointIDSF.git
     cd JointIDSF/
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
 ```
-
 
 ## Training and Evaluation
 To reproduce the results in the paper, please run
 ```
-    ./run_jointBERT_XLM-Rencoder.sh
+    ./run_jointIDSF_PhoBERTencoder.sh
     ./run_jointIDSF_XLM-Rencoder.sh
 ```
 Note that as we initialize JointIDSF from JointBERT, so in the run scripts, we also include the command to train a base JointBERT model. 
 Example usage:
 ```
-python3 main.py --task word-level \
+python3 main.py --token_level word-level \
                   --model_type phobert \
                   --model_dir ./JointBERT_PhoBERTencoder/ \
                   --data_dir data \
@@ -64,7 +63,6 @@ python3 main.py --task word-level \
                   --num_train_epochs 50 \
                   --tuning_metric mean_intent_slot \
                   --use_crf \
-                  --token_level word \
                   --embedding_type soft \
                   --intent_loss_coef 0.6 \
                   --learning_rate 3e-5
@@ -79,6 +77,7 @@ python3 predict.py  --input_file <input_file_name> \
                     --model_dir <path_to_trained_model>
 ```
 where input file is a raw text file (one utterance per line)
+
 ## Acknowledgement
 Our code is based on the unofficial implementation of the JointBERT paper from https://github.com/monologg/JointBERT 
 
