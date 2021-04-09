@@ -72,7 +72,7 @@ python3 main.py --token_level word-level \
 ## Inference
 To tag a new text file:
 ```
-python3 predict.py  --input_file <input_file_name> \
+python3 predict.py  --input_file <path_to_input_file> \
                     --output_file <output_file_name> \
                     --model_dir <path_to_trained_model>
 ```
