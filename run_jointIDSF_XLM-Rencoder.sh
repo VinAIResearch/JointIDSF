@@ -3,7 +3,7 @@
 #Train JointIDSF
 export lr=3e-5
 export c=0.25
-export s=1
+export s=10
 echo "${lr}"
 export MODEL_DIR=JointIDSF_XLM-Rencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
