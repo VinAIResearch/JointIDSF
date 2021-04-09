@@ -55,7 +55,7 @@ python3 main.py --token_level word-level \
                   --model_type phobert \
                   --model_dir ./JointBERT_PhoBERTencoder/ \
                   --data_dir data \
-                  --seed 1 \
+                  --seed 100 \
                   --do_train \
                   --do_eval \
                   --save_steps 140 \
