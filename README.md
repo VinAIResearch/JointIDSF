@@ -24,7 +24,7 @@ Details of our JointIDSF model architecture, dataset construction and experiment
 ## Dataset
 
 <p align="center">	
-<img width="400" alt="statistic" src="table_statistic.png">
+<img width="400" alt="statistic" src="dataset_statistic.png">
 </p>
 
 > ***By downloading our dataset, USER agrees:***
