@@ -25,7 +25,6 @@ python3 main.py --token_level syllable-level \
                   --gpu_id 0 \
                   --embedding_type soft \
                   --intent_loss_coef $c \
-                  --early_stopping 50 \
                   --pretrained \
                   --pretrained_path JointBERT-CRF_XLM-Rencoder/4e-5/0.45/1 \
                   --learning_rate $lr

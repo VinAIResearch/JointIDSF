@@ -51,7 +51,7 @@ Run the following two bash files to reproduce results presented in our paper:
     ./run_jointIDSF_XLM-Rencoder.sh
 ```
 
- - Here, in these batch files, we include running scripts to train both our JointIDSF and the baseline JointBERT+CRF.  
+ - Here, in these bash files, we include running scripts to train both our JointIDSF and the baseline JointBERT+CRF.  
  - **Although we conduct experiments using our Vietnamese dataset, the running scripts in `run_jointIDSF_XLM-Rencoder.sh` can adapt for other languages that have gold annotated corpora available for intent detection and slot filling.** Please prepare your data with the same format as in the ```data``` directory.
 
 ### Inference

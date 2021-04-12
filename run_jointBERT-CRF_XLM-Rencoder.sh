@@ -20,5 +20,4 @@ python3 main.py --token_level syllable-level \
                   --gpu_id 0 \
                   --embedding_type soft \
                   --intent_loss_coef $c \
-                  --early_stopping 50 \
                   --learning_rate $lr
