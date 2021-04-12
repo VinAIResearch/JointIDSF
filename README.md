@@ -27,7 +27,7 @@ Details of our JointIDSF model architecture, dataset construction and experiment
 <img width="400" alt="statistic" src="dataset_statistic.png">
 </p>
 
-> ***By downloading our dataset, USER agrees:***
+> ***By downloading [our dataset](https://github.com/VinAIResearch/JointIDSF/tree/main/data), USER agrees:***
 > * to use the dataset for research or educational purposes only.
 > * to **not** distribute the dataset or part of the dataset in any original or modified form.
 > * and to cite our paper above whenever the dataset is employed to help produce published results.
