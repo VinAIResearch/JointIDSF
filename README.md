@@ -45,7 +45,7 @@ Details of our JointIDSF model architecture, dataset construction and experiment
 ```
 
 ### Training and Evaluation
-Run the following two batch files to reproduce results presented in our paper:
+Run the following two bash files to reproduce results presented in our paper:
 ```
     ./run_jointIDSF_PhoBERTencoder.sh
     ./run_jointIDSF_XLM-Rencoder.sh
@@ -55,20 +55,20 @@ Run the following two batch files to reproduce results presented in our paper:
  - **Although we conduct experiments using our Vietnamese dataset, the running scripts in `run_jointIDSF_XLM-Rencoder.sh` can adapt for other languages that have gold annotated corpora available for intent detection and slot filling.** Please prepare your data with the same format as in the ```data``` directory.
 
 ### Inference
-We also provide model checkpoints of JointBERT and JointIDSF. Please download these checkpoints if you want to make inference on a new text file without training the models from scratch.
+We also provide model checkpoints of JointBERT+CRF and JointIDSF. Please download these checkpoints if you want to make inference on a new text file without training the models from scratch.
 ```
-wget http://public.vinai.io/JointBERT_PhoBERTencoder.tar.gz
-tar -xvf JointBERT_PhoBERTencoder.tar.gz
-wget http://public.vinai.io/JointIDSF_PhoBERTencoder.tar.gz
-tar -xvf JointIDSF_PhoBERTencoder.tar.gz
+wget http://public.vinai.io/<model_name>.tar.gz
+tar -xvf <model_name>.tar.gz
 ```
+where model_name in ```JointBERT-CRF_PhoBERTEncoder, JointBERT-CRF_XLM-Rencoder, JointIDSF_PhoBERTencoder, JointIDSF_XLM-Rencoder```.
+
 Example of tagging a new text file using JointIDSF model:
 ```
 python3 predict.py  --input_file <path_to_input_file> \
                     --output_file <output_file_name> \
-                    --model_dir JointIDSF_PhoBERTencoder
+                    --model_dir JointIDSF_XLM-Rencoder
 ```
 where the input file is a raw text file (one utterance per line).
 
 ### Acknowledgement
-Our code is based on the unofficial implementation of the JointBERT paper from https://github.com/monologg/JointBERT
+Our code is based on the unofficial implementation of the JointBERT+CRF paper from https://github.com/monologg/JointBERT

@@ -1,5 +1,5 @@
 #As we initialize JointIDSF from JointBERT, user need to train a base model JointBERT first
-./run_jointBERT_PhoBERTencoder.sh
+./run_jointBERT-CRF_PhoBERTencoder.sh
 #Train JointIDSF
 export lr=4e-5
 export c=0.15
@@ -26,5 +26,5 @@ python3 main.py --token_level word-level \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --pretrained \
-                  --pretrained_path JointBERT_PhoBERTencoder/3e-5/0.6/100 \
+                  --pretrained_path JointBERT-CRF_PhoBERTencoder/3e-5/0.6/100 \
                   --learning_rate $lr

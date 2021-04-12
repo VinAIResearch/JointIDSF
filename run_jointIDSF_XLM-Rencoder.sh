@@ -1,5 +1,5 @@
 #As we initialize JointIDSF from JointBERT, user need to train a base model JointBERT first
-./run_jointBERT_XLM-Rencoder.sh
+./run_jointBERT-CRF_XLM-Rencoder.sh
 #Train JointIDSF
 export lr=3e-5
 export c=0.25
@@ -27,5 +27,5 @@ python3 main.py --token_level syllable-level \
                   --intent_loss_coef $c \
                   --early_stopping 50 \
                   --pretrained \
-                  --pretrained_path JointBERT_XLM-Rencoder/4e-5/0.45/1 \
+                  --pretrained_path JointBERT-CRF_XLM-Rencoder/4e-5/0.45/1 \
                   --learning_rate $lr
