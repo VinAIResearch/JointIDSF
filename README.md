@@ -55,12 +55,18 @@ Run the following two batch files to reproduce results presented in our paper:
  - **Although we conduct experiments using our Vietnamese dataset, the running scripts in `run_jointIDSF_XLM-Rencoder.sh` can adapt for other languages that have gold annotated corpora available for intent detection and slot filling.** Please prepare your data with the same format as in the ```data``` directory.
 
 ### Inference
-
-To tag a new text file:
+We also provide model checkpoints of JointBERT and JointIDSF. Please download these checkpoints if you want to make inference on a new text file without training the models from scratch.
+```
+wget http://public.vinai.io/JointBERT_PhoBERTencoder.tar.gz
+tar -xvf JointBERT_PhoBERTencoder.tar.gz
+wget http://public.vinai.io/JointIDSF_PhoBERTencoder.tar.gz
+tar -xvf JointIDSF_PhoBERTencoder.tar.gz
+```
+Example of tagging a new text file using JointIDSF model:
 ```
 python3 predict.py  --input_file <path_to_input_file> \
                     --output_file <output_file_name> \
-                    --model_dir <path_to_trained_model>
+                    --model_dir JointIDSF_PhoBERTencoder
 ```
 where the input file is a raw text file (one utterance per line).
 
