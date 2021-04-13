@@ -26,5 +26,5 @@ python3 main.py --token_level syllable-level \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --pretrained \
-                  --pretrained_path JointBERT-CRF_XLM-Rencoder/4e-5/0.45/1 \
+                  --pretrained_path JointBERT-CRF_XLM-Rencoder/4e-5/0.45/10 \
                   --learning_rate $lr
