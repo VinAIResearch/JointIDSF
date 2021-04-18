@@ -2,7 +2,7 @@ export lr=4e-5
 export c=0.45
 export s=10
 echo "${lr}"
-export MODEL_DIR=JointBERT_XLM-Rencoder
+export MODEL_DIR=JointBERT-CRF_XLM-Rencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
 python3 main.py --token_level syllable-level \

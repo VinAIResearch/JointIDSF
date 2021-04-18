@@ -2,7 +2,7 @@ export lr=3e-5
 export c=0.6
 export s=100
 echo "${lr}"
-export MODEL_DIR=JointBERT_PhoBERTencoder
+export MODEL_DIR=JointBERT-CRF_PhoBERTencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
 python3 main.py --token_level word-level \
