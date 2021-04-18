@@ -13,7 +13,7 @@ Details of our JointIDSF model architecture, dataset construction and experiment
 
     @article{jointidsf,
     title     = {{Intent detection and slot filling for Vietnamese}},
-    author    = {Mai Hoang Dao, Thinh Hung Truong, Dat Quoc Nguyen},
+    author    = {Mai Hoang Dao and Thinh Hung Truong and Dat Quoc Nguyen},
     journal   = {arXiv preprint},
     year      = {2021}
     volume    = {arXiv:2104.02021}
