@@ -5,10 +5,10 @@ echo "${lr}"
 export MODEL_DIR=JointBERT-CRF_PhoBERTencoder
 export MODEL_DIR=$MODEL_DIR"/"$lr"/"$c"/"$s
 echo "${MODEL_DIR}"
-python3 main.py --token_level word-level \
+/usr/bin/python3.7 main.py --token_level word-level \
                   --model_type phobert \
                   --model_dir $MODEL_DIR \
-                  --data_dir data \
+                  --data_dir PhoATIS \
                   --seed $s \
                   --do_train \
                   --do_eval \
@@ -17,7 +17,7 @@ python3 main.py --token_level word-level \
                   --num_train_epochs 50 \
                   --tuning_metric mean_intent_slot \
                   --use_crf \
-                  --gpu_id 0 \
+                  --gpu_id 1 \
                   --embedding_type soft \
                   --intent_loss_coef $c \
                   --learning_rate $lr
