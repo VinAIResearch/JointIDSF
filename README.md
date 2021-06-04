@@ -11,14 +11,12 @@
 
 Details of our JointIDSF model architecture, dataset construction and experimental results can be found in our [following paper](https://arxiv.org/abs/2104.02021):
 
-    @article{jointidsf,
-    title     = {{Intent detection and slot filling for Vietnamese}},
-    author    = {Mai Hoang Dao and Thinh Hung Truong and Dat Quoc Nguyen},
-    journal   = {arXiv preprint},
-    year      = {2021}
-    volume    = {arXiv:2104.02021}
+    @inproceedings{JointIDSF,
+        title     = {{Intent Detection and Slot Filling for Vietnamese}},
+        author    = {Mai Hoang Dao and Thinh Hung Truong and Dat Quoc Nguyen},
+        booktitle = {Proceedings of the 22nd Annual Conference of the International Speech Communication Association (INTERSPEECH)},
+        year      = {2021}
     }
-
 **Please CITE** our paper whenever our dataset or model implementation is used to help produce published results or incorporated into other software.
 
 ## Dataset
@@ -27,7 +25,7 @@ Details of our JointIDSF model architecture, dataset construction and experiment
 <img width="400" alt="statistic" src="dataset_statistic.png">
 </p>
 
-> ***By downloading [our dataset](https://github.com/VinAIResearch/JointIDSF/tree/main/data), USER agrees:***
+> ***By downloading [our dataset](https://github.com/VinAIResearch/JointIDSF/tree/main/PhoATIS), USER agrees:***
 > * to use the dataset for research or educational purposes only.
 > * to **not** distribute the dataset or part of the dataset in any original or modified form.
 > * and to cite our paper above whenever the dataset is employed to help produce published results.
