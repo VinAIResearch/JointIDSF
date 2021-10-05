@@ -54,11 +54,17 @@ Run the following two bash files to reproduce results presented in our paper:
 
 ### Inference
 We also provide model checkpoints of JointBERT+CRF and JointIDSF. Please download these checkpoints if you want to make inference on a new text file without training the models from scratch.
-```
-wget http://public.vinai.io/<model_name>.tar.gz
-tar -xvf <model_name>.tar.gz
-```
-where model_name in ```JointBERT-CRF_PhoBERTEncoder, JointBERT-CRF_XLM-Rencoder, JointIDSF_PhoBERTencoder, JointIDSF_XLM-Rencoder```.
+ - JointIDSF
+ 
+http://public.vinai.io/JointIDSF_PhoBERTencoder.tar.gz
+
+http://public.vinai.io/JointIDSF_XLM-Rencoder.tar.gz
+
+ - JointBERT+CRF
+ 
+http://public.vinai.io/JointBERT-CRF_PhoBERTencoder.tar.gz
+
+http://public.vinai.io/JointBERT-CRF_XLM-Rencoder.tar.gz
 
 Example of tagging a new text file using JointIDSF model:
 ```
