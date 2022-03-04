@@ -155,3 +155,15 @@ class SlotClassifier(nn.Module):
             x = output
         x = self.dropout(x)
         return self.linear(x)
+
+
+
+class DisfluencyClassifier(nn.Module):
+    def __init__(self, input_dim, num_df_labels, dropout_rate=0.):
+        super(DisfluencyClassifier, self).__init__()
+        self.dropout = nn.Dropout(dropout_rate)
+        self.linear = nn.Linear(input_dim, num_df_labels)
+
+    def forward(self, x):
+        x = self.dropout(x)
+        return self.linear(x)
