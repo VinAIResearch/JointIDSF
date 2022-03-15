@@ -38,6 +38,12 @@ def get_slot_labels(args):
         for label in open(os.path.join(args.data_dir, args.token_level, args.slot_label_file), "r", encoding="utf-8")
     ]
 
+def get_disfluency_labels(args):
+    return [
+        label.strip()
+        for label in open(os.path.join(args.data_dir, args.token_level, args.disfluency_label_file), "r", encoding="utf-8")
+    ]
+
 
 def load_tokenizer(args):
     return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)

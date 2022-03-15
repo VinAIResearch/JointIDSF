@@ -62,6 +62,8 @@ class JointBERTDF(BertPreTrainedModel):
         else:
             slot_logits = self.slot_classifier(sequence_output, intent_logits, tmp_attention_mask)
 
+	df_logits = self.df_classifier(sequence_output)
+	
         total_loss = 0
         # 1. Intent Softmax
         if intent_label_ids is not None:
@@ -110,7 +112,7 @@ class JointBERTDF(BertPreTrainedModel):
             total_loss += (1 - self.args.intent_loss_coef - self.args.slot_loss_coef) * slot_loss
 
 
-        outputs = ((intent_logits, slot_logits),) + outputs[2:]  # add hidden states and attention if they are here
+        outputs = ((intent_logits, slot_logits, df_logits),) + outputs[2:]  # add hidden states and attention if they are here
 
         outputs = (total_loss,) + outputs
 

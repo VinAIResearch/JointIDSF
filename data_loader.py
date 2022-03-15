@@ -5,7 +5,7 @@ import os
 
 import torch
 from torch.utils.data import TensorDataset
-from utils import get_intent_labels, get_slot_labels
+from utils import get_intent_labels, get_slot_labels, get_disfluency_labels
 
 
 logger = logging.getLogger(__name__)
@@ -22,11 +22,12 @@ class InputExample(object):
         slot_labels: (Optional) list. The slot labels of the example.
     """
 
-    def __init__(self, guid, words, intent_label=None, slot_labels=None):
+    def __init__(self, guid, words, intent_label=None, slot_labels=None, disfluency_labels=None):
         self.guid = guid
         self.words = words
         self.intent_label = intent_label
         self.slot_labels = slot_labels
+        self.disfluency_labels = disfluency_labels
 
     def __repr__(self):
         return str(self.to_json_string())
@@ -44,12 +45,13 @@ class InputExample(object):
 class InputFeatures(object):
     """A single set of features of data."""
 
-    def __init__(self, input_ids, attention_mask, token_type_ids, intent_label_id, slot_labels_ids):
+    def __init__(self, input_ids, attention_mask, token_type_ids, intent_label_id, slot_labels_ids, disfluency_labels_ids):
         self.input_ids = input_ids
         self.attention_mask = attention_mask
         self.token_type_ids = token_type_ids
         self.intent_label_id = intent_label_id
         self.slot_labels_ids = slot_labels_ids
+        self.disfluency_labels_ids = disfluency_labels_ids
 
     def __repr__(self):
         return str(self.to_json_string())
@@ -71,10 +73,12 @@ class JointProcessor(object):
         self.args = args
         self.intent_labels = get_intent_labels(args)
         self.slot_labels = get_slot_labels(args)
+        self.disfluency_labels = get_disfluency_labels(args)
 
         self.input_text_file = "seq.in"
         self.intent_label_file = "label"
-        self.slot_labels_file = "seq.out"
+        self.slot_labels_file = "seq_slot.out"
+        self.disfluency_labels_file = 'seq_dis.out'
 
     @classmethod
     def _read_file(cls, input_file, quotechar=None):
@@ -85,10 +89,10 @@ class JointProcessor(object):
                 lines.append(line.strip())
             return lines
 
-    def _create_examples(self, texts, intents, slots, set_type):
+    def _create_examples(self, texts, intents, slots, disfluencies, set_type):
         """Creates examples for the training and dev sets."""
         examples = []
-        for i, (text, intent, slot) in enumerate(zip(texts, intents, slots)):
+        for i, (text, intent, slot, disfluency) in enumerate(zip(texts, intents, slots, disfluencies)):
             guid = "%s-%s" % (set_type, i)
             # 1. input_text
             words = text.split()  # Some are spaced twice
@@ -103,8 +107,16 @@ class JointProcessor(object):
                     self.slot_labels.index(s) if s in self.slot_labels else self.slot_labels.index("UNK")
                 )
 
+            disfluency_labels = []
+            for s in disfluency.split():
+                disfluency_labels.append(
+                    self.disfluency_labels.index(s) if s in self.disfluency_labels else self.disfluency_labels.index("UNK")
+                )
+
             assert len(words) == len(slot_labels)
-            examples.append(InputExample(guid=guid, words=words, intent_label=intent_label, slot_labels=slot_labels))
+            assert len(words) == len(disfluency_labels)
+
+            examples.append(InputExample(guid=guid, words=words, intent_label=intent_label, slot_labels=slot_labels, disfluency_labels=disfluency_labels))
         return examples
 
     def get_examples(self, mode):
@@ -118,6 +130,7 @@ class JointProcessor(object):
             texts=self._read_file(os.path.join(data_path, self.input_text_file)),
             intents=self._read_file(os.path.join(data_path, self.intent_label_file)),
             slots=self._read_file(os.path.join(data_path, self.slot_labels_file)),
+            disfluencies=self._read_file(os.path.join(data_path, self.disfluency_labels_file)),
             set_type=mode,
         )
 
@@ -149,28 +162,34 @@ def convert_examples_to_features(
         # Tokenize word by word (for NER)
         tokens = []
         slot_labels_ids = []
-        for word, slot_label in zip(example.words, example.slot_labels):
+        disfluency_labels_ids = []
+        for word, slot_label, disfluency_label in zip(example.words, example.slot_labels, example.disfluency_labels):
             word_tokens = tokenizer.tokenize(word)
             if not word_tokens:
                 word_tokens = [unk_token]  # For handling the bad-encoded word
             tokens.extend(word_tokens)
             # Use the real label id for the first token of the word, and padding ids for the remaining tokens
             slot_labels_ids.extend([int(slot_label)] + [pad_token_label_id] * (len(word_tokens) - 1))
+            disfluency_labels_ids.extend([int(disfluency_label)] + [pad_token_label_id] * (len(word_tokens) - 1))
+
 
         # Account for [CLS] and [SEP]
         special_tokens_count = 2
         if len(tokens) > max_seq_len - special_tokens_count:
             tokens = tokens[: (max_seq_len - special_tokens_count)]
             slot_labels_ids = slot_labels_ids[: (max_seq_len - special_tokens_count)]
+            disfluency_labels_ids = disfluency_labels_ids[: (max_seq_len - special_tokens_count)]
 
         # Add [SEP] token
         tokens += [sep_token]
         slot_labels_ids += [pad_token_label_id]
+        disfluency_labels_ids += [pad_token_label_id]
         token_type_ids = [sequence_a_segment_id] * len(tokens)
 
         # Add [CLS] token
         tokens = [cls_token] + tokens
         slot_labels_ids = [pad_token_label_id] + slot_labels_ids
+        disfluency_labels_ids = [pad_token_label_id] + disfluency_labels_ids
         token_type_ids = [cls_token_segment_id] + token_type_ids
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
@@ -185,6 +204,7 @@ def convert_examples_to_features(
         attention_mask = attention_mask + ([0 if mask_padding_with_zero else 1] * padding_length)
         token_type_ids = token_type_ids + ([pad_token_segment_id] * padding_length)
         slot_labels_ids = slot_labels_ids + ([pad_token_label_id] * padding_length)
+        disfluency_labels_ids = disfluency_labels_ids + ([pad_token_label_id] * padding_length)
 
         assert len(input_ids) == max_seq_len, "Error with input length {} vs {}".format(len(input_ids), max_seq_len)
         assert len(attention_mask) == max_seq_len, "Error with attention mask length {} vs {}".format(
@@ -195,6 +215,9 @@ def convert_examples_to_features(
         )
         assert len(slot_labels_ids) == max_seq_len, "Error with slot labels length {} vs {}".format(
             len(slot_labels_ids), max_seq_len
+        )
+        assert len(disfluency_labels_ids) == max_seq_len, "Error with disfluency labels length {} vs {}".format(
+            len(disfluency_labels_ids), max_seq_len
         )
 
         intent_label_id = int(example.intent_label)
@@ -208,6 +231,7 @@ def convert_examples_to_features(
             logger.info("token_type_ids: %s" % " ".join([str(x) for x in token_type_ids]))
             logger.info("intent_label: %s (id = %d)" % (example.intent_label, intent_label_id))
             logger.info("slot_labels: %s" % " ".join([str(x) for x in slot_labels_ids]))
+            logger.info("disfluency_labels: %s" % " ".join([str(x) for x in disfluency_labels_ids]))
 
         features.append(
             InputFeatures(
@@ -216,6 +240,7 @@ def convert_examples_to_features(
                 token_type_ids=token_type_ids,
                 intent_label_id=intent_label_id,
                 slot_labels_ids=slot_labels_ids,
+                disfluency_labels_ids=disfluency_labels_ids
             )
         )
 
@@ -262,8 +287,10 @@ def load_and_cache_examples(args, tokenizer, mode):
     all_token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
     all_intent_label_ids = torch.tensor([f.intent_label_id for f in features], dtype=torch.long)
     all_slot_labels_ids = torch.tensor([f.slot_labels_ids for f in features], dtype=torch.long)
+    all_disfluency_labels_ids = torch.tensor([f.disfluency_labels_ids for f in features], dtype=torch.long)
+
 
     dataset = TensorDataset(
-        all_input_ids, all_attention_mask, all_token_type_ids, all_intent_label_ids, all_slot_labels_ids
+        all_input_ids, all_attention_mask, all_token_type_ids, all_intent_label_ids, all_slot_labels_ids, all_disfluency_labels_ids
     )
     return dataset
