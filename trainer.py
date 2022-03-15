@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.tensorboard import SummaryWriter
 from tqdm.auto import tqdm, trange
 from transformers import AdamW, get_linear_schedule_with_warmup
-from utils import MODEL_CLASSES, compute_metrics, get_intent_labels, get_slot_labels
+from utils import MODEL_CLASSES, compute_metrics, get_intent_labels, get_slot_labels, get_disfluency_labels
 
 
 logger = logging.getLogger(__name__)
@@ -23,6 +23,8 @@ class Trainer(object):
 
         self.intent_label_lst = get_intent_labels(args)
         self.slot_label_lst = get_slot_labels(args)
+        self.disfluency_label_lst = get_disfluency_labels(args)
+
         # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
         self.pad_token_label_id = args.ignore_index
         self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
@@ -35,6 +37,7 @@ class Trainer(object):
                 args=args,
                 intent_label_lst=self.intent_label_lst,
                 slot_label_lst=self.slot_label_lst,
+                disfluency_label_lst=self.disfluency_label_lst
             )
         else:
             self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.token_level)
@@ -44,6 +47,7 @@ class Trainer(object):
                 args=args,
                 intent_label_lst=self.intent_label_lst,
                 slot_label_lst=self.slot_label_lst,
+                disfluency_label_lst=self.disfluency_label_lst
             )
         # GPU or CPU
         torch.cuda.set_device(self.args.gpu_id)
@@ -113,6 +117,7 @@ class Trainer(object):
                     "attention_mask": batch[1],
                     "intent_label_ids": batch[3],
                     "slot_labels_ids": batch[4],
+                    "disfluency_label_ids": batch[5]
                 }
                 if self.args.model_type != "distilbert":
                     inputs["token_type_ids"] = batch[2]
@@ -189,8 +194,10 @@ class Trainer(object):
         nb_eval_steps = 0
         intent_preds = None
         slot_preds = None
+        disfluency_preds = None
         out_intent_label_ids = None
         out_slot_labels_ids = None
+        out_disfluency_labels_ids = None
 
         self.model.eval()
 
@@ -202,11 +209,12 @@ class Trainer(object):
                     "attention_mask": batch[1],
                     "intent_label_ids": batch[3],
                     "slot_labels_ids": batch[4],
+                    "disfluency_labels_ids": batch[5]
                 }
                 if self.args.model_type != "distilbert":
                     inputs["token_type_ids"] = batch[2]
                 outputs = self.model(**inputs)
-                tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
+                tmp_eval_loss, (intent_logits, slot_logits, disfluency_logits) = outputs[:2]
 
                 eval_loss += tmp_eval_loss.mean().item()
             nb_eval_steps += 1
@@ -239,6 +247,24 @@ class Trainer(object):
                 out_slot_labels_ids = np.append(
                     out_slot_labels_ids, inputs["slot_labels_ids"].detach().cpu().numpy(), axis=0
                 )
+            
+            if disfluency_preds is None:
+                if self.args.use_crf:
+                    # decode() in `torchcrf` returns list with best index directly
+                    disfluency_preds = np.array(self.model.crf.decode(disfluency_logits))
+                else:
+                    disfluency_preds = disfluency_logits.detach().cpu().numpy()
+
+                out_disfluency_labels_ids = inputs["disfluency_labels_ids"].detach().cpu().numpy()
+            else:
+                if self.args.use_crf:
+                    disfluency_preds = np.append(disfluency_preds, np.array(self.model.crf.decode(disfluency_logits)), axis=0)
+                else:
+                    disfluency_preds = np.append(disfluency_preds, disfluency_logits.detach().cpu().numpy(), axis=0)
+
+                out_disfluency_labels_ids = np.append(
+                    out_disfluency_labels_ids, inputs["disfluency_labels_ids"].detach().cpu().numpy(), axis=0
+                )
 
         eval_loss = eval_loss / nb_eval_steps
         results = {"loss": eval_loss}
@@ -258,8 +284,21 @@ class Trainer(object):
                 if out_slot_labels_ids[i, j] != self.pad_token_label_id:
                     out_slot_label_list[i].append(slot_label_map[out_slot_labels_ids[i][j]])
                     slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
+        
+        # Slot result
+        if not self.args.use_crf:
+            disfluency_preds = np.argmax(disfluency_preds, axis=2)
+        disfluency_label_map = {i: label for i, label in enumerate(self.disfluency_label_lst)}
+        out_disfluency_label_list = [[] for _ in range(out_disfluency_labels_ids.shape[0])]
+        disfluency_preds_list = [[] for _ in range(out_disfluency_labels_ids.shape[0])]
 
-        total_result = compute_metrics(intent_preds, out_intent_label_ids, slot_preds_list, out_slot_label_list)
+        for i in range(out_disfluency_labels_ids.shape[0]):
+            for j in range(out_disfluency_labels_ids.shape[1]):
+                if out_disfluency_labels_ids[i, j] != self.pad_token_label_id:
+                    out_disfluency_label_list[i].append(disfluency_label_map[out_disfluency_labels_ids[i][j]])
+                    disfluency_preds_list[i].append(disfluency_label_map[disfluency_preds[i][j]])
+
+        total_result = compute_metrics(intent_preds, out_intent_label_ids, slot_preds_list, out_slot_label_list, disfluency_preds_list, out_disfluency_label_list)
         results.update(total_result)
 
         logger.info("***** Eval results *****")
@@ -293,6 +332,7 @@ class Trainer(object):
                 args=self.args,
                 intent_label_lst=self.intent_label_lst,
                 slot_label_lst=self.slot_label_lst,
+                disfluency_label_lst=self.disfluency_label_lst
             )
             self.model.to(self.device)
             logger.info("***** Model Loaded *****")

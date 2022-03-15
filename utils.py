@@ -65,11 +65,13 @@ def set_seed(args):
         torch.cuda.manual_seed_all(args.seed)
 
 
-def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
+def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels, disfluency_preds, disfluency_labels):
     assert len(intent_preds) == len(intent_labels) == len(slot_preds) == len(slot_labels)
     results = {}
     intent_result = get_intent_acc(intent_preds, intent_labels)
     slot_result = get_slot_metrics(slot_preds, slot_labels)
+    disfluency_result = get_disfluency_metrics(disfluency_preds, disfluency_labels)
+
     sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
 
     mean_intent_slot = (intent_result["intent_acc"] + slot_result["slot_f1"]) / 2
@@ -77,6 +79,7 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     results.update(intent_result)
     results.update(slot_result)
     results.update(sementic_result)
+    results.update(disfluency_result)
     results["mean_intent_slot"] = mean_intent_slot
 
     return results
@@ -90,6 +93,13 @@ def get_slot_metrics(preds, labels):
         "slot_f1": f1_score(labels, preds),
     }
 
+def get_disfluency_metrics(preds, labels):
+    assert len(preds) == len(labels)
+    return {
+        "disfluency_precision": precision_score(labels, preds),
+        "disfluency_recall": recall_score(labels, preds),
+        "disfluency_f1": f1_score(labels, preds),
+    }
 
 def get_intent_acc(preds, labels):
     acc = (preds == labels).mean()

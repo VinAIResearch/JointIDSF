@@ -4,17 +4,17 @@ from torchcrf import CRF
 from transformers.models.roberta.modeling_roberta import RobertaModel, RobertaPreTrainedModel
 from transformers.models.bert.modeling_bert
 
-from .module import IntentClassifier, SlotClassifier
+from .module import IntentClassifier, SlotClassifier, DisfluencyClassifier
 
 
 class JointBERTDF(BertPreTrainedModel):
-    def __init__(self, config, args, intent_label_lst, slot_label_lst, df_label_lst):
+    def __init__(self, config, args, intent_label_lst, slot_label_lst, disfluency_label_lst):
         super(JointPhoBERT, self).__init__(config)
         self.args = args
         
-	self.num_intent_labels = len(intent_label_lst)
+        self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
-	self.num_df_labels = len(df_label_lst)
+        self.num_disfluency_labels = len(disfluency_label_lst)
 
         self.bert = BertModel(config)  # Load pretrained phobert
 
@@ -31,16 +31,17 @@ class JointBERTDF(BertPreTrainedModel):
             args.dropout_rate,
         )
 
-        self.df_classifier = DisfluencyClassifier(
+        self.disfluency_classifier = DisfluencyClassifier(
             config.hidden_size,
-            self.args.max_seq_len,
+            self.num_disfluency_labels,
             args.dropout_rate,
         )
 
         if args.use_crf:
-            self.crf = CRF(num_tags=self.num_slot_labels, batch_first=True)
+            self.crf_slot = CRF(num_tags=self.num_slot_labels, batch_first=True)
+            self.crf_disfluency = CRF(num_tags=self.num_disfluency_labels, batch_first=True)
 
-    def forward(self, input_ids, attention_mask, token_type_ids, intent_label_ids, slot_labels_ids):
+    def forward(self, input_ids, attention_mask, token_type_ids, intent_label_ids, slot_labels_ids, disfluency_labels_ids):
         outputs = self.roberta(
             input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids
         )  # sequence_output, pooled_output, (hidden_states), (attentions)
@@ -62,7 +63,7 @@ class JointBERTDF(BertPreTrainedModel):
         else:
             slot_logits = self.slot_classifier(sequence_output, intent_logits, tmp_attention_mask)
 
-	df_logits = self.df_classifier(sequence_output)
+        disfluency_logits = self.disfluency_classifier(sequence_output)
 	
         total_loss = 0
         # 1. Intent Softmax
@@ -80,7 +81,7 @@ class JointBERTDF(BertPreTrainedModel):
         # 2. Slot Softmax
         if slot_labels_ids is not None:
             if self.args.use_crf:
-                slot_loss = self.crf(slot_logits, slot_labels_ids, mask=attention_mask.byte(), reduction="mean")
+                slot_loss = self.crf_slot(slot_logits, slot_labels_ids, mask=attention_mask.byte(), reduction="mean")
                 slot_loss = -1 * slot_loss  # negative log-likelihood
             else:
                 slot_loss_fct = nn.CrossEntropyLoss(ignore_index=self.args.ignore_index)
@@ -89,31 +90,4 @@ class JointBERTDF(BertPreTrainedModel):
                     active_loss = attention_mask.view(-1) == 1
                     active_logits = slot_logits.view(-1, self.num_slot_labels)[active_loss]
                     active_labels = slot_labels_ids.view(-1)[active_loss]
-                    slot_loss = slot_loss_fct(active_logits, active_labels)
-                else:
-                    slot_loss = slot_loss_fct(slot_logits.view(-1, self.num_slot_labels), slot_labels_ids.view(-1))
-            total_loss += self.args.slot_loss_coef * slot_loss
-
-        # 2. Disfluency Softmax
-        if df_labels_ids is not None:
-            if self.args.use_crf:
-                df_loss = self.crf(df_logits, df_labels_ids, mask=attention_mask.byte(), reduction="mean")
-                df_loss = -1 * df_loss  # negative log-likelihood
-            else:
-                df_loss_fct = nn.CrossEntropyLoss(ignore_index=self.args.ignore_index)
-                # Only keep active parts of the loss
-                if attention_mask is not None:
-                    active_loss = attention_mask.view(-1) == 1
-                    active_logits = df_logits.view(-1, self.num_df_labels)[active_loss]
-                    active_labels = df_labels_ids.view(-1)[active_loss]
-                    df_loss = df_loss_fct(active_logits, active_labels)
-                else:
-                    df_loss = df_loss_fct(df_logits.view(-1, self.num_df_labels), df_labels_ids.view(-1))
-            total_loss += (1 - self.args.intent_loss_coef - self.args.slot_loss_coef) * slot_loss
-
-
-        outputs = ((intent_logits, slot_logits, df_logits),) + outputs[2:]  # add hidden states and attention if they are here
-
-        outputs = (total_loss,) + outputs
-
-        return outputs  # (loss), logits, (hidden_states), (attentions) # Logits is a tuple of intent and slot logits and disfluency logits
+                    slot_loss = slo
