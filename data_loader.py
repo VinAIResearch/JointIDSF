@@ -78,7 +78,7 @@ class JointProcessor(object):
         self.input_text_file = "seq.in"
         self.intent_label_file = "label"
         self.slot_labels_file = "seq_slot.out"
-        self.disfluency_labels_file = 'seq_dis.out'
+        self.disfluency_labels_file = 'seq_disfluency.out'
 
     @classmethod
     def _read_file(cls, input_file, quotechar=None):
@@ -106,7 +106,7 @@ class JointProcessor(object):
                 slot_labels.append(
                     self.slot_labels.index(s) if s in self.slot_labels else self.slot_labels.index("UNK")
                 )
-
+            # 4. disfluency
             disfluency_labels = []
             for s in disfluency.split():
                 disfluency_labels.append(
@@ -135,7 +135,7 @@ class JointProcessor(object):
         )
 
 
-processors = {"syllable-level": JointProcessor, "word-level": JointProcessor}
+processors = {"syllable": JointProcessor, "word": JointProcessor}
 
 
 def convert_examples_to_features(

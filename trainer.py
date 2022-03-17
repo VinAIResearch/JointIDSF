@@ -39,6 +39,7 @@ class Trainer(object):
                 slot_label_lst=self.slot_label_lst,
                 disfluency_label_lst=self.disfluency_label_lst
             )
+
         else:
             self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.token_level)
             self.model = self.model_class.from_pretrained(
@@ -49,6 +50,7 @@ class Trainer(object):
                 slot_label_lst=self.slot_label_lst,
                 disfluency_label_lst=self.disfluency_label_lst
             )
+        
         # GPU or CPU
         torch.cuda.set_device(self.args.gpu_id)
         print(self.args.gpu_id)
@@ -111,16 +113,18 @@ class Trainer(object):
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)  # GPU or CPU
-
+                # print(len(batch))
                 inputs = {
                     "input_ids": batch[0],
                     "attention_mask": batch[1],
                     "intent_label_ids": batch[3],
                     "slot_labels_ids": batch[4],
-                    "disfluency_label_ids": batch[5]
+                    "disfluency_labels_ids": batch[5]
                 }
+
                 if self.args.model_type != "distilbert":
                     inputs["token_type_ids"] = batch[2]
+                # print(self.model)
                 outputs = self.model(**inputs)
                 loss = outputs[0]
 
@@ -144,6 +148,7 @@ class Trainer(object):
                         writer.add_scalar("Loss/validation", results["loss"], _)
                         writer.add_scalar("Intent Accuracy/validation", results["intent_acc"], _)
                         writer.add_scalar("Slot F1/validation", results["slot_f1"], _)
+                        writer.add_scalar("Disfluency F1/validation", results["disfluency_f1"], _)
                         writer.add_scalar("Mean Intent Slot", results["mean_intent_slot"], _)
                         writer.add_scalar("Sentence Accuracy/validation", results["semantic_frame_acc"], _)
                         early_stopping(results[self.args.tuning_metric], self.model, self.args)
@@ -217,6 +222,7 @@ class Trainer(object):
                 tmp_eval_loss, (intent_logits, slot_logits, disfluency_logits) = outputs[:2]
 
                 eval_loss += tmp_eval_loss.mean().item()
+            
             nb_eval_steps += 1
 
             # Intent prediction
@@ -233,14 +239,14 @@ class Trainer(object):
             if slot_preds is None:
                 if self.args.use_crf:
                     # decode() in `torchcrf` returns list with best index directly
-                    slot_preds = np.array(self.model.crf.decode(slot_logits))
+                    slot_preds = np.array(self.model.crf_slot.decode(slot_logits))
                 else:
                     slot_preds = slot_logits.detach().cpu().numpy()
 
                 out_slot_labels_ids = inputs["slot_labels_ids"].detach().cpu().numpy()
             else:
                 if self.args.use_crf:
-                    slot_preds = np.append(slot_preds, np.array(self.model.crf.decode(slot_logits)), axis=0)
+                    slot_preds = np.append(slot_preds, np.array(self.model.crf_slot.decode(slot_logits)), axis=0)
                 else:
                     slot_preds = np.append(slot_preds, slot_logits.detach().cpu().numpy(), axis=0)
 
@@ -251,14 +257,14 @@ class Trainer(object):
             if disfluency_preds is None:
                 if self.args.use_crf:
                     # decode() in `torchcrf` returns list with best index directly
-                    disfluency_preds = np.array(self.model.crf.decode(disfluency_logits))
+                    disfluency_preds = np.array(self.model.crf_disfluency.decode(disfluency_logits))
                 else:
                     disfluency_preds = disfluency_logits.detach().cpu().numpy()
 
                 out_disfluency_labels_ids = inputs["disfluency_labels_ids"].detach().cpu().numpy()
             else:
                 if self.args.use_crf:
-                    disfluency_preds = np.append(disfluency_preds, np.array(self.model.crf.decode(disfluency_logits)), axis=0)
+                    disfluency_preds = np.append(disfluency_preds, np.array(self.model.crf_disfluency.decode(disfluency_logits)), axis=0)
                 else:
                     disfluency_preds = np.append(disfluency_preds, disfluency_logits.detach().cpu().numpy(), axis=0)
 

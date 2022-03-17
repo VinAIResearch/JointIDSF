@@ -2,21 +2,21 @@ import torch
 import torch.nn as nn
 from torchcrf import CRF
 from transformers.models.roberta.modeling_roberta import RobertaModel, RobertaPreTrainedModel
-from transformers.models.bert.modeling_bert
+from transformers.models.bert.modeling_bert import BertModel, BertPreTrainedModel
 
 from .module import IntentClassifier, SlotClassifier, DisfluencyClassifier
 
 
-class JointBERTDF(BertPreTrainedModel):
+class JointPhoBERTDF(BertPreTrainedModel):
     def __init__(self, config, args, intent_label_lst, slot_label_lst, disfluency_label_lst):
-        super(JointPhoBERT, self).__init__(config)
+        super(JointPhoBERTDF, self).__init__(config)
         self.args = args
         
         self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
         self.num_disfluency_labels = len(disfluency_label_lst)
 
-        self.bert = BertModel(config)  # Load pretrained phobert
+        self.roberta = RobertaModel(config)  # Load pretrained phobert
 
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
 
@@ -90,4 +90,30 @@ class JointBERTDF(BertPreTrainedModel):
                     active_loss = attention_mask.view(-1) == 1
                     active_logits = slot_logits.view(-1, self.num_slot_labels)[active_loss]
                     active_labels = slot_labels_ids.view(-1)[active_loss]
-                    slot_loss = slo
+                    slot_loss = slot_loss_fct(active_logits, active_labels)
+                else:
+                    slot_loss = slot_loss_fct(slot_logits.view(-1, self.num_slot_labels), slot_labels_ids.view(-1))
+            total_loss += self.args.slot_loss_coef * slot_loss
+        
+        # 3. Disfluency Softmax
+        if disfluency_labels_ids is not None:
+            if self.args.use_crf:
+                disfluency_loss = self.crf_disfluency(disfluency_logits, disfluency_labels_ids, mask=attention_mask.byte(), reduction="mean")
+                disfluency_loss = -1 * disfluency_loss  # negative log-likelihood
+            else:
+                disfluency_loss_fct = nn.CrossEntropyLoss(ignore_index=self.args.ignore_index)
+                # Only keep active parts of the loss
+                if attention_mask is not None:
+                    active_loss = attention_mask.view(-1) == 1
+                    active_logits = disfluency_logits.view(-1, self.num_disfluency_labels)[active_loss]
+                    active_labels = disfluency_labels_ids.view(-1)[active_loss]
+                    disfluency_loss = disfluency_loss_fct(active_logits, active_labels)
+                else:
+                    disfluency_loss = disfluency_loss_fct(disfluency_logits.view(-1, self.num_disfluency_labels), disfluency_labels_ids.view(-1))
+            total_loss += (1 - self.args.intent_loss_coef - self.args.slot_loss_coef) * disfluency_loss
+        
+        outputs = ((intent_logits, slot_logits, disfluency_logits),) + outputs[2:]  # add hidden states and attention if they are here
+
+        outputs = (total_loss,) + outputs
+
+        return outputs

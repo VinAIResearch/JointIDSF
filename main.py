@@ -35,6 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", default="./PhoATIS", type=str, help="The input data dir")
     parser.add_argument("--intent_label_file", default="intent_label.txt", type=str, help="Intent Label file")
     parser.add_argument("--slot_label_file", default="slot_label.txt", type=str, help="Slot Label file")
+    parser.add_argument("--disfluency_label_file", default="disfluency_label.txt", type=str, help="Disfluency Label file")
 
     parser.add_argument(
         "--model_type",
@@ -42,6 +43,7 @@ if __name__ == "__main__":
         type=str,
         help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()),
     )
+
     parser.add_argument("--tuning_metric", default="loss", type=str, help="Metrics to tune when training")
     parser.add_argument("--seed", type=int, default=1, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
@@ -87,7 +89,9 @@ if __name__ == "__main__":
         help="Specifies a target value that is ignored and does not contribute to the input gradient",
     )
 
-    parser.add_argument("--intent_loss_coef", type=float, default=0.5, help="Coefficient for the intent loss.")
+    parser.add_argument("--intent_loss_coef", type=float, default=0.33, help="Coefficient for the intent loss.")
+    parser.add_argument("--slot_loss_coef", type=float, default=0.33, help="Coefficient for the slot loss.")
+    
     parser.add_argument(
         "--token_level",
         type=str,

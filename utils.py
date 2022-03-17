@@ -4,7 +4,7 @@ import random
 
 import numpy as np
 import torch
-from model import JointPhoBERT, JointXLMR
+from model import JointPhoBERT, JointXLMR, JointPhoBERTDF
 from seqeval.metrics import f1_score, precision_score, recall_score
 from transformers import (
     AutoTokenizer,
@@ -17,11 +17,13 @@ from transformers import (
 MODEL_CLASSES = {
     "xlmr": (XLMRobertaConfig, JointXLMR, XLMRobertaTokenizer),
     "phobert": (RobertaConfig, JointPhoBERT, AutoTokenizer),
+    "jointdf": (RobertaConfig, JointPhoBERTDF, AutoTokenizer),
 }
 
 MODEL_PATH_MAP = {
     "xlmr": "xlm-roberta-base",
     "phobert": "vinai/phobert-base",
+    "jointdf": "vinai/phobert-base",
 }
 
 
