@@ -9,7 +9,7 @@
 </p>
 
 
-Details of our JointIDSF model architecture, dataset construction and experimental results can be found in our [following paper](https://arxiv.org/abs/2104.02021):
+Details of our JointIDSF model architecture, dataset construction and experimental results can be found in our [following paper](https://www.isca-speech.org/archive/interspeech_2021/dao21_interspeech.html):
 
     @inproceedings{JointIDSF,
         title     = {{Intent Detection and Slot Filling for Vietnamese}},
